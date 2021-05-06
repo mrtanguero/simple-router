@@ -1,0 +1,5 @@
+@media screen and (min-width: 768px) {
+  .navbar-nav a:last-of-type {
+    margin-left: auto;
+  }
+}
