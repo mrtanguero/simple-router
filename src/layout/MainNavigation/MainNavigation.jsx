@@ -18,13 +18,13 @@ export default function MainNavigation({ isLoggedIn }) {
             {isLoggedIn ? (
               <>
                 <Nav.Link as={NavLink} to="/movies">
-                  Movies
+                  Filmovi
                 </Nav.Link>
                 <Nav.Link as={NavLink} to="/books">
-                  Books
+                  Knjige
                 </Nav.Link>
                 <Nav.Link as={NavLink} to="/people">
-                  People
+                  Osobe
                 </Nav.Link>
                 <Nav.Link as={NavLink} to="/logout">
                   Logout

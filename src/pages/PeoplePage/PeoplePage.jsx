@@ -3,7 +3,7 @@ import React from 'react';
 export default function PeoplePage() {
   return (
     <div>
-      <h2 className="text-center mb-4">Lista osoba</h2>
+      <h2 className="text-center mb-4">Osobe</h2>
     </div>
   );
 }
