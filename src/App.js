@@ -18,6 +18,8 @@ import EditMoviePage from './pages/EditMoviePage/EditMoviePage';
 import NewMoviePage from './pages/NewMoviePage/NewMoviePage';
 import EditBookPage from './pages/EditBookPage/EditBookPage';
 import NewBookPage from './pages/NewBookPage/NewBoogPage';
+import EditPersonPage from './pages/EditPersonPage/EditPersonPage';
+import NewPersonPage from './pages/NewPersonPage/NewPersonPage';
 import Page404 from './pages/Page404/Page404';
 
 function App() {
@@ -36,7 +38,11 @@ function App() {
       ? JSON.parse(localStorage.getItem('books'))
       : BOOKS || []
   );
-  const [people, setPeople] = useState(PEOPLE);
+  const [people, setPeople] = useState(
+    localStorage.getItem('people')
+      ? JSON.parse(localStorage.getItem('people'))
+      : PEOPLE || []
+  );
 
   useEffect(() => {
     localStorage.setItem('movies', JSON.stringify(movies));
@@ -45,6 +51,10 @@ function App() {
   useEffect(() => {
     localStorage.setItem('books', JSON.stringify(books));
   }, [books]);
+
+  useEffect(() => {
+    localStorage.setItem('people', JSON.stringify(people));
+  }, [people]);
 
   return (
     <>
@@ -73,7 +83,13 @@ function App() {
             <EditBookPage books={books} setBooks={setBooks} />
           </ProtectedRoute>
           <ProtectedRoute isLoggedIn={isLoggedIn} path="/people" exact>
-            <PeoplePage people={people} />
+            <PeoplePage people={people} setPeople={setPeople} />
+          </ProtectedRoute>
+          <ProtectedRoute isLoggedIn={isLoggedIn} path="/people/new">
+            <NewPersonPage people={people} setPeople={setPeople} />
+          </ProtectedRoute>
+          <ProtectedRoute isLoggedIn={isLoggedIn} path="/people/:personId">
+            <EditPersonPage people={people} setPeople={setPeople} />
           </ProtectedRoute>
           <Route path="/login">
             <LoginPage setIsLoggedIn={setIsLoggedIn} />
