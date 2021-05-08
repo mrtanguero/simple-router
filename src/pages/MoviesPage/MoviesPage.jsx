@@ -22,7 +22,7 @@ export default function MoviesPage({ movies, setMovies }) {
   };
 
   const moviesList = movies.map((movie) => (
-    <Col s={12} md={6} xl={4} key={movie.title}>
+    <Col s={12} md={6} xl={4} key={movie.id}>
       <MovieCard {...movie} deleteMovie={deleteMovie} />
     </Col>
   ));

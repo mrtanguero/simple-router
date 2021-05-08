@@ -20,7 +20,6 @@ export default function NewMovieForm({ movies, setMovies }) {
   );
 
   const getNewId = () => {
-    console.log('test');
     return (
       movies.reduce(
         (max, current) => (current.id > max ? current.id : max),
