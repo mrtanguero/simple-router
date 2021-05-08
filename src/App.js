@@ -21,6 +21,7 @@ import NewBookPage from './pages/NewBookPage/NewBoogPage';
 import EditPersonPage from './pages/EditPersonPage/EditPersonPage';
 import NewPersonPage from './pages/NewPersonPage/NewPersonPage';
 import Page404 from './pages/Page404/Page404';
+import Footer from './layout/Footer/Footer/Footer';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(
@@ -59,7 +60,7 @@ function App() {
   return (
     <>
       <MainNavigation isLoggedIn={isLoggedIn} />
-      <Container className="mt-4">
+      <Container className="mt-4 flex-grow-1">
         <Switch>
           <Route path="/" exact>
             <Redirect to="/movies" />
@@ -102,6 +103,7 @@ function App() {
           </Route>
         </Switch>
       </Container>
+      <Footer />
     </>
   );
 }

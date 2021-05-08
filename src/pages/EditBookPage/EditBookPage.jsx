@@ -5,7 +5,7 @@ export default function EditBookPage({ books, setBooks }) {
   return (
     <>
       <h2 className="text-center mb-4">Izmijeni knjigu</h2>
-      <EditBookForm books={books} setBooks={setBooks} />;
+      <EditBookForm books={books} setBooks={setBooks} />
     </>
   );
 }
