@@ -18,7 +18,6 @@ export default function MoviesPage({ movies, setMovies }) {
 
   const handleCloseModal = () => setShowModal(false);
   const handleShowModal = (id) => {
-    console.log(movies);
     setModalData({
       id: id,
       movieName: movies.find((movie) => movie.id === id).name,

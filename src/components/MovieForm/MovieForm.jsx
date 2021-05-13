@@ -5,7 +5,7 @@ import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
 import { apiExample } from '../../api/apiExample';
 
-export default function EditMovieForm() {
+export default function MovieForm() {
   const { movieId } = useParams();
   const history = useHistory();
 
@@ -16,8 +16,7 @@ export default function EditMovieForm() {
   const [movieRating, setMovieRating] = useState('');
 
   useEffect(() => {
-    // TODO: objediniti forme za add i za edit
-    // if (movieId === 'new') return;
+    if (movieId === 'new') return;
     apiExample
       .get(`/movies/${movieId}`)
       .then((response) => {
@@ -33,21 +32,31 @@ export default function EditMovieForm() {
   const onSubmitHandler = (e) => {
     e.preventDefault();
     const newMovie = {
-      id: movieId,
       name: movieName,
       duration: movieDuration,
       directorName: movieDirector,
       writerName: movieWriter,
       rating: movieRating,
     };
-    apiExample
-      .put(`/movies`, newMovie)
-      .then(() => history.replace('/movies'))
-      .catch((err) => console.log(err));
+    if (movieId !== 'new') {
+      newMovie.id = +movieId;
+      apiExample
+        .put(`/movies`, newMovie)
+        .then(() => history.replace('/movies'))
+        .catch((err) => console.log(err));
+    } else {
+      apiExample
+        .post('/movies', newMovie)
+        .then(() => history.replace('/movies'))
+        .catch((err) => console.log(err));
+    }
   };
 
   return (
     <Form onSubmit={onSubmitHandler}>
+      <h2 className="text-center mb-4">
+        {movieId === 'new' ? 'Dodaj film' : 'Izmijeni film'}
+      </h2>
       <Container>
         <Form.Group className="mb-4" controlId="movieName">
           <Form.Label>Naziv filma</Form.Label>
@@ -102,7 +111,7 @@ export default function EditMovieForm() {
         </Form.Group>
 
         <Button variant="outline-primary" type="submit" className="mb-4 w-100">
-          Dodaj film
+          {movieId === 'new' ? 'Dodaj film' : 'Snimi izmjene'}
         </Button>
       </Container>
     </Form>

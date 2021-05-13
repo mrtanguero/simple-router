@@ -8,19 +8,20 @@ import { PEOPLE } from './dummy_data/people';
 
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
 import MainNavigation from './layout/MainNavigation/MainNavigation';
-import BooksPage from './pages/BooksPage/BooksPage';
-import MoviesPage from './pages/MoviesPage/MoviesPage';
-import PeoplePage from './pages/PeoplePage/PeoplePage';
 import LoginPage from './pages/LoginPage/LoginPage';
 import Logout from './components/Logout/Logout';
-import EditMoviePage from './pages/EditMoviePage/EditMoviePage';
-import NewMoviePage from './pages/NewMoviePage/NewMoviePage';
+import MoviesPage from './pages/MoviesPage/MoviesPage';
+
+import BooksPage from './pages/BooksPage/BooksPage';
 import EditBookPage from './pages/EditBookPage/EditBookPage';
 import NewBookPage from './pages/NewBookPage/NewBoogPage';
+import PeoplePage from './pages/PeoplePage/PeoplePage';
 import EditPersonPage from './pages/EditPersonPage/EditPersonPage';
 import NewPersonPage from './pages/NewPersonPage/NewPersonPage';
+
 import Page404 from './pages/Page404/Page404';
 import Footer from './layout/Footer/Footer/Footer';
+import MovieForm from './components/MovieForm/MovieForm';
 
 function App() {
   const [jwtToken, setJwtToken] = useState(
@@ -59,11 +60,8 @@ function App() {
           <ProtectedRoute jwtToken={jwtToken} path="/movies" exact>
             <MoviesPage movies={movies} setMovies={setMovies} />
           </ProtectedRoute>
-          <ProtectedRoute jwtToken={jwtToken} path="/movies/new">
-            <NewMoviePage movies={movies} setMovies={setMovies} />
-          </ProtectedRoute>
           <ProtectedRoute jwtToken={jwtToken} path="/movies/:movieId">
-            <EditMoviePage movies={movies} setMovies={setMovies} />
+            <MovieForm movies={movies} setMovies={setMovies} />
           </ProtectedRoute>
           <ProtectedRoute jwtToken={jwtToken} path="/books" exact>
             <BooksPage books={books} setBooks={setBooks} />
