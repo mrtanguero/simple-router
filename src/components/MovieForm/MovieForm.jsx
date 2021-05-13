@@ -78,7 +78,7 @@ export default function MovieForm() {
           />
         </Form.Group>
 
-        <Form.Group className="mb-4" controlId="moveWriter">
+        <Form.Group className="mb-4" controlId="movieWriter">
           <Form.Label>Scenario</Form.Label>
           <Form.Control
             type="text"
@@ -88,7 +88,7 @@ export default function MovieForm() {
           />
         </Form.Group>
 
-        <Form.Group className="mb-4" controlId="moveDirector">
+        <Form.Group className="mb-4" controlId="movieDirector">
           <Form.Label>Režija</Form.Label>
           <Form.Control
             type="text"
@@ -98,7 +98,7 @@ export default function MovieForm() {
           />
         </Form.Group>
 
-        <Form.Group className="mb-4" controlId="moveRating">
+        <Form.Group className="mb-4" controlId="movieRating">
           <Form.Label>Ocjena (1-5)</Form.Label>
           <Form.Control
             type="number"
