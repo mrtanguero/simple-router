@@ -18,7 +18,11 @@ export default function MovieForm() {
   useEffect(() => {
     if (movieId === 'new') return;
     apiExample
-      .get(`/movies/${movieId}`)
+      .get(`/movies/${movieId}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
+        },
+      })
       .then((response) => {
         setMovieName(response.data.name);
         setMovieDirector(response.data.directorName);
@@ -41,12 +45,20 @@ export default function MovieForm() {
     if (movieId !== 'new') {
       newMovie.id = +movieId;
       apiExample
-        .put(`/movies`, newMovie)
+        .put(`/movies`, newMovie, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
+          },
+        })
         .then(() => history.replace('/movies'))
         .catch((err) => console.log(err));
     } else {
       apiExample
-        .post('/movies', newMovie)
+        .post('/movies', newMovie, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
+          },
+        })
         .then(() => history.replace('/movies'))
         .catch((err) => console.log(err));
     }

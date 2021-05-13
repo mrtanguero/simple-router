@@ -18,7 +18,11 @@ export default function BookForm() {
   useEffect(() => {
     if (bookId === 'new') return;
     apiExample
-      .get(`/books/${bookId}`)
+      .get(`/books/${bookId}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
+        },
+      })
       .then((response) => {
         setBookName(response.data.isbn);
         setBookWriter(response.data.writerName);

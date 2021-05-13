@@ -27,7 +27,11 @@ export default function MoviesPage({ movies, setMovies }) {
 
   useEffect(() => {
     apiExample
-      .get('/movies')
+      .get('/movies', {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
+        },
+      })
       .then((response) => {
         setMovies(response.data);
       })
@@ -39,7 +43,11 @@ export default function MoviesPage({ movies, setMovies }) {
   };
 
   const deleteMovie = (id) => {
-    apiExample.delete(`/movies/${id}`);
+    apiExample.delete(`/movies/${id}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
+      },
+    });
     const newMovies = _.cloneDeep(movies).filter((movie) => movie.id !== id);
     setMovies(newMovies);
   };

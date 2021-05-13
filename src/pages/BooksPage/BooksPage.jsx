@@ -20,14 +20,18 @@ export default function BooksPage({ books, setBooks }) {
   const handleShowModal = (id) => {
     setModalData({
       id: id,
-      bookName: books.find((book) => book.id === id).name,
+      bookName: books.find((book) => book.id === id).isbn,
     });
     setShowModal(true);
   };
 
   useEffect(() => {
     apiExample
-      .get('/books')
+      .get('/books', {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
+        },
+      })
       .then((response) => {
         setBooks(response.data);
       })
@@ -39,7 +43,11 @@ export default function BooksPage({ books, setBooks }) {
   };
 
   const deleteBook = (id) => {
-    apiExample.delete(`/books/${id}`);
+    apiExample.delete(`/books/${id}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
+      },
+    });
     const newBooks = _.cloneDeep(books).filter((book) => book.id !== id);
     setBooks(newBooks);
   };
@@ -107,7 +115,7 @@ export default function BooksPage({ books, setBooks }) {
             <Modal.Title>UPOZORENJE:</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            Da li stvarno želite da obrišete film{' '}
+            Da li stvarno želite da obrišete knjigu{' '}
             <strong>{modalData.bookName}</strong>?
           </Modal.Body>
           <Modal.Footer>

@@ -13,14 +13,22 @@ export default function LoginForm({ setJwtToken }) {
     e.preventDefault();
 
     apiExample
-      .post('/authenticate', {
-        username: username,
-        password: password,
-        rememberMe: true,
-      })
+      .post(
+        '/authenticate',
+        {
+          username: username,
+          password: password,
+          rememberMe: true,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
+          },
+        }
+      )
       .then((response) => {
-        setJwtToken(response.data.id_token);
         localStorage.setItem('jwtToken', response.data.id_token);
+        setJwtToken(response.data.id_token);
         history.replace('/movies');
       })
       .catch((err) => {

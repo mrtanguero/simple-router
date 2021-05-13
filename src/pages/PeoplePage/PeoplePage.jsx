@@ -1,38 +1,130 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import _ from 'lodash';
-import { useHistory } from 'react-router';
+import { Link, useHistory } from 'react-router-dom';
 
 import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
+import Table from 'react-bootstrap/Table';
+import Modal from 'react-bootstrap/Modal';
 
-import PersonCard from '../../components/PersonCard/PersonCard';
+import { apiExample } from '../../api/apiExample';
+import EditIcon from '../../components/EditIcon/EditIcon';
+import DeleteIcon from '../../components/DeleteIcon/DeleteIcon';
 
 export default function PeoplePage({ people, setPeople }) {
   const history = useHistory();
+  const [showModal, setShowModal] = useState(false);
+  const [modalData, setModalData] = useState({});
 
-  const onAddNewPersonButonHandler = () => {
+  const handleCloseModal = () => setShowModal(false);
+  const handleShowModal = (id) => {
+    setModalData({
+      id: id,
+      personName:
+        people.find((person) => person.id === id).firstName +
+        ' ' +
+        people.find((person) => person.id === id).lastName,
+    });
+    setShowModal(true);
+  };
+
+  const translateGender = (gender) => {
+    switch (gender) {
+      case 'MALE':
+        return 'muški';
+      case 'FEMALE':
+        return 'ženski';
+      case 'OTHER':
+        return 'ostalo';
+      default:
+        break;
+    }
+  };
+
+  useEffect(() => {
+    apiExample
+      .get('/people', {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
+        },
+      })
+      .then((response) => {
+        setPeople(response.data);
+      })
+      .catch((err) => console.log(err));
+  }, [setPeople]);
+
+  const onAddNewpersonButonHandler = () => {
     history.push('/people/new');
   };
 
-  const deletePerson = (id) => {
+  const deleteperson = (id) => {
+    apiExample.delete(`/people/${id}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
+      },
+    });
     const newPeople = _.cloneDeep(people).filter((person) => person.id !== id);
     setPeople(newPeople);
   };
 
-  const peopleList = people.map((person) => (
-    <Col s={12} md={6} xl={4} key={person.id}>
-      <PersonCard {...person} deletePerson={deletePerson} />
-    </Col>
-  ));
+  const handleConfirmDelete = (id) => {
+    deleteperson(id);
+    setShowModal(false);
+  };
+
+  const headers = [
+    'Ime',
+    'Prezime',
+    'Pol',
+    'Datum rođenja',
+    'Godine',
+    'Zanimanje',
+    '',
+  ];
   return (
     <div>
-      <h2 className="text-center mb-4">Osobe</h2>
+      <h2 className="text-center mb-4">Knjige</h2>
       <Container>
-        <Row className="g-3">{peopleList}</Row>
+        <Table striped hover>
+          <thead>
+            <tr>
+              {headers.map((head) => (
+                <th key={head}>{head}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {people.map((person) => (
+              <tr className="align-middle" key={person.id}>
+                <td>{person.firstName}</td>
+                <td>{person.lastName}</td>
+                <td>{translateGender(person.gender)}</td>
+                <td>{person.dateOfBirth}</td>
+                <td>{person.age}</td>
+                <td>{person.occupation}</td>
+                <td>
+                  <div className="d-flex">
+                    <Link
+                      to={`/people/${person.id}`}
+                      className="btn btn-primary me-1"
+                    >
+                      <EditIcon />
+                    </Link>
+                    <Button
+                      variant="danger"
+                      onClick={() => handleShowModal(person.id)}
+                    >
+                      <DeleteIcon />
+                    </Button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
         <Button
-          onClick={onAddNewPersonButonHandler}
+          onClick={onAddNewpersonButonHandler}
           variant="danger"
           style={{
             position: 'fixed',
@@ -43,6 +135,26 @@ export default function PeoplePage({ people, setPeople }) {
         >
           + Dodaj novu osobu
         </Button>
+        <Modal show={showModal} onHide={handleCloseModal} centered>
+          <Modal.Header>
+            <Modal.Title>UPOZORENJE:</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            Da li stvarno želite da obrišete osobu{' '}
+            <strong>{modalData.personName}</strong>?
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleCloseModal}>
+              Odustani
+            </Button>
+            <Button
+              variant="danger"
+              onClick={() => handleConfirmDelete(modalData.id)}
+            >
+              Obriši
+            </Button>
+          </Modal.Footer>
+        </Modal>
       </Container>
     </div>
   );
