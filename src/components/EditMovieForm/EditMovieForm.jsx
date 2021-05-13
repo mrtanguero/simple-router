@@ -1,128 +1,109 @@
-import React, { useState } from 'react';
-import _ from 'lodash';
+import React, { useEffect, useState } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
+import { apiExample } from '../../api/apiExample';
 
-export default function EditMovieForm({ movies, setMovies }) {
+export default function EditMovieForm() {
   const { movieId } = useParams();
   const history = useHistory();
-  const movie = movies.filter((movie) => movie.id === +movieId)[0];
 
-  const [movieTitle, setMovieTitle] = useState(movie.title);
-  const [movieYear, setMovieYear] = useState(movie.year);
-  const [movieGenre, setMovieGenre] = useState(movie.genre);
-  const [movieDirector, setMovieDirector] = useState(movie.director);
-  const [movieActors, setMovieActors] = useState(movie.actors);
-  const [movieImageUrl, setMovieImageUrl] = useState(movie.imageUrl);
+  const [movieName, setMovieName] = useState('');
+  const [movieDirector, setMovieDirector] = useState('');
+  const [movieDuration, setMovieDuration] = useState('');
+  const [movieWriter, setMovieWriter] = useState('');
+  const [movieRating, setMovieRating] = useState('');
+
+  useEffect(() => {
+    // TODO: objediniti forme za add i za edit
+    // if (movieId === 'new') return;
+    apiExample
+      .get(`/movies/${movieId}`)
+      .then((response) => {
+        setMovieName(response.data.name);
+        setMovieDirector(response.data.directorName);
+        setMovieDuration(response.data.duration);
+        setMovieWriter(response.data.writerName);
+        setMovieRating(response.data.rating);
+      })
+      .catch((err) => console.log(err));
+  }, [movieId]);
 
   const onSubmitHandler = (e) => {
     e.preventDefault();
-    let newMovies = _.cloneDeep(movies).filter((mov) => mov.id !== movie.id);
-    newMovies = [
-      {
-        id: +movieId,
-        title: movieTitle,
-        year: movieYear,
-        genre: movieGenre,
-        director: movieDirector,
-        actors: movieActors,
-        imageUrl: movieImageUrl,
-      },
-      ...newMovies,
-    ];
-    setMovies(newMovies);
-    history.replace('/movies');
+    const newMovie = {
+      id: movieId,
+      name: movieName,
+      duration: movieDuration,
+      directorName: movieDirector,
+      writerName: movieWriter,
+      rating: movieRating,
+    };
+    apiExample
+      .put(`/movies`, newMovie)
+      .then(() => history.replace('/movies'))
+      .catch((err) => console.log(err));
   };
 
   return (
     <Form onSubmit={onSubmitHandler}>
       <Container>
-        <Row>
-          <Col md={7}>
-            <div className="form-fields-container pe-5 ps-5">
-              <Form.Group className="mb-4" controlId="movieName">
-                <Form.Label>Naziv filma</Form.Label>
-                <Form.Control
-                  type="text"
-                  value={movieTitle}
-                  onChange={(e) => setMovieTitle(e.target.value)}
-                />
-              </Form.Group>
+        <Form.Group className="mb-4" controlId="movieName">
+          <Form.Label>Naziv filma</Form.Label>
+          <Form.Control
+            type="text"
+            value={movieName}
+            placeholder="Unesite ime filma..."
+            onChange={(e) => setMovieName(e.target.value)}
+          />
+        </Form.Group>
 
-              <Form.Group className="mb-4" controlId="movieYear">
-                <Form.Label>Godina izdavanja</Form.Label>
-                <Form.Control
-                  type="number"
-                  from={1900}
-                  to={2021}
-                  value={+movieYear}
-                  onChange={(e) => setMovieYear(e.target.value)}
-                />
-              </Form.Group>
+        <Form.Group className="mb-4" controlId="movieDuration">
+          <Form.Label>Tranjanje filma (min)</Form.Label>
+          <Form.Control
+            type="number"
+            value={movieDuration}
+            placeholder="Unesite trajanje filma..."
+            onChange={(e) => setMovieDuration(e.target.value)}
+          />
+        </Form.Group>
 
-              <Form.Group className="mb-4" controlId="moveGenre">
-                <Form.Label>Žanr</Form.Label>
-                <Form.Control
-                  type="text"
-                  value={movieGenre}
-                  onChange={(e) => setMovieGenre(e.target.value)}
-                />
-              </Form.Group>
+        <Form.Group className="mb-4" controlId="moveWriter">
+          <Form.Label>Scenario</Form.Label>
+          <Form.Control
+            type="text"
+            value={movieWriter}
+            placeholder="Unesite scenaristu/scenaristkinju..."
+            onChange={(e) => setMovieWriter(e.target.value)}
+          />
+        </Form.Group>
 
-              <Form.Group className="mb-4" controlId="moveDirector">
-                <Form.Label>Režija</Form.Label>
-                <Form.Control
-                  type="text"
-                  value={movieDirector}
-                  onChange={(e) => setMovieDirector(e.target.value)}
-                />
-              </Form.Group>
+        <Form.Group className="mb-4" controlId="moveDirector">
+          <Form.Label>Režija</Form.Label>
+          <Form.Control
+            type="text"
+            value={movieDirector}
+            placeholder="Unesite ime režisera/režiserke..."
+            onChange={(e) => setMovieDirector(e.target.value)}
+          />
+        </Form.Group>
 
-              <Form.Group className="mb-4" controlId="moveActors">
-                <Form.Label>Glumci</Form.Label>
-                <Form.Control
-                  type="text"
-                  value={movieActors}
-                  onChange={(e) => setMovieActors(e.target.value)}
-                />
-              </Form.Group>
+        <Form.Group className="mb-4" controlId="moveRating">
+          <Form.Label>Ocjena (1-5)</Form.Label>
+          <Form.Control
+            type="number"
+            from="1"
+            to="5"
+            value={movieRating}
+            placeholder="Unesite ocjenu..."
+            onChange={(e) => setMovieRating(e.target.value)}
+          />
+        </Form.Group>
 
-              <Form.Group className="mb-4" controlId="moveImageUrl">
-                <Form.Label>URL fotografije</Form.Label>
-                <Form.Control
-                  type="url"
-                  value={movieImageUrl}
-                  onChange={(e) => setMovieImageUrl(e.target.value)}
-                />
-              </Form.Group>
-
-              <Button
-                variant="outline-primary"
-                type="submit"
-                className="mb-4 w-100"
-              >
-                Snimi izmjene
-              </Button>
-            </div>
-          </Col>
-          <Col md={5}>
-            <div className="image-container mb-4">
-              <img
-                src={movieImageUrl}
-                alt={movieTitle}
-                style={{
-                  objectFit: 'cover',
-                  width: '100%',
-                  height: 'auto',
-                }}
-              />
-            </div>
-          </Col>
-        </Row>
+        <Button variant="outline-primary" type="submit" className="mb-4 w-100">
+          Dodaj film
+        </Button>
       </Container>
     </Form>
   );

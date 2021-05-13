@@ -3,7 +3,6 @@ import { Redirect, Route, Switch } from 'react-router-dom';
 import Container from 'react-bootstrap/Container';
 import './App.css';
 
-import { MOVIES } from './dummy_data/movies';
 import { BOOKS } from './dummy_data/books';
 import { PEOPLE } from './dummy_data/people';
 
@@ -24,16 +23,12 @@ import Page404 from './pages/Page404/Page404';
 import Footer from './layout/Footer/Footer/Footer';
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(
-    localStorage.getItem('isLoggedIn')
-      ? JSON.parse(localStorage.getItem('isLoggedIn'))
-      : false
+  const [jwtToken, setJwtToken] = useState(
+    localStorage.getItem('jwtToken') ? localStorage.getItem('jwtToken') : ''
   );
-  const [movies, setMovies] = useState(
-    localStorage.getItem('movies')
-      ? JSON.parse(localStorage.getItem('movies'))
-      : MOVIES || []
-  );
+
+  const [movies, setMovies] = useState([]);
+
   const [books, setBooks] = useState(
     localStorage.getItem('books')
       ? JSON.parse(localStorage.getItem('books'))
@@ -46,10 +41,6 @@ function App() {
   );
 
   useEffect(() => {
-    localStorage.setItem('movies', JSON.stringify(movies));
-  }, [movies]);
-
-  useEffect(() => {
     localStorage.setItem('books', JSON.stringify(books));
   }, [books]);
 
@@ -59,44 +50,44 @@ function App() {
 
   return (
     <>
-      <MainNavigation isLoggedIn={isLoggedIn} />
+      <MainNavigation jwtToken={jwtToken} />
       <Container className="mt-4 flex-grow-1">
         <Switch>
           <Route path="/" exact>
             <Redirect to="/movies" />
           </Route>
-          <ProtectedRoute isLoggedIn={isLoggedIn} path="/movies" exact>
+          <ProtectedRoute jwtToken={jwtToken} path="/movies" exact>
             <MoviesPage movies={movies} setMovies={setMovies} />
           </ProtectedRoute>
-          <ProtectedRoute isLoggedIn={isLoggedIn} path="/movies/new">
+          <ProtectedRoute jwtToken={jwtToken} path="/movies/new">
             <NewMoviePage movies={movies} setMovies={setMovies} />
           </ProtectedRoute>
-          <ProtectedRoute isLoggedIn={isLoggedIn} path="/movies/:movieId">
+          <ProtectedRoute jwtToken={jwtToken} path="/movies/:movieId">
             <EditMoviePage movies={movies} setMovies={setMovies} />
           </ProtectedRoute>
-          <ProtectedRoute isLoggedIn={isLoggedIn} path="/books" exact>
+          <ProtectedRoute jwtToken={jwtToken} path="/books" exact>
             <BooksPage books={books} setBooks={setBooks} />
           </ProtectedRoute>
-          <ProtectedRoute isLoggedIn={isLoggedIn} path="/books/new">
+          <ProtectedRoute jwtToken={jwtToken} path="/books/new">
             <NewBookPage books={books} setBooks={setBooks} />
           </ProtectedRoute>
-          <ProtectedRoute isLoggedIn={isLoggedIn} path="/books/:bookId">
+          <ProtectedRoute jwtToken={jwtToken} path="/books/:bookId">
             <EditBookPage books={books} setBooks={setBooks} />
           </ProtectedRoute>
-          <ProtectedRoute isLoggedIn={isLoggedIn} path="/people" exact>
+          <ProtectedRoute jwtToken={jwtToken} path="/people" exact>
             <PeoplePage people={people} setPeople={setPeople} />
           </ProtectedRoute>
-          <ProtectedRoute isLoggedIn={isLoggedIn} path="/people/new">
+          <ProtectedRoute jwtToken={jwtToken} path="/people/new">
             <NewPersonPage people={people} setPeople={setPeople} />
           </ProtectedRoute>
-          <ProtectedRoute isLoggedIn={isLoggedIn} path="/people/:personId">
+          <ProtectedRoute jwtToken={jwtToken} path="/people/:personId">
             <EditPersonPage people={people} setPeople={setPeople} />
           </ProtectedRoute>
           <Route path="/login">
-            <LoginPage setIsLoggedIn={setIsLoggedIn} />
+            <LoginPage setJwtToken={setJwtToken} />
           </Route>
           <Route path="/logout">
-            <Logout setIsLoggedIn={setIsLoggedIn} />
+            <Logout setJwtToken={setJwtToken} />
           </Route>
           <Route path="*">
             <Page404 />

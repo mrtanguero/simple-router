@@ -5,7 +5,7 @@ import Container from 'react-bootstrap/Container';
 import { Link, NavLink } from 'react-router-dom';
 import './MainNavigation.css';
 
-export default function MainNavigation({ isLoggedIn }) {
+export default function MainNavigation({ jwtToken }) {
   return (
     <Navbar bg="dark" variant="dark" expand="md">
       <Container>
@@ -15,7 +15,7 @@ export default function MainNavigation({ isLoggedIn }) {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto w-100">
-            {isLoggedIn ? (
+            {jwtToken ? (
               <>
                 <Nav.Link as={NavLink} to="/movies">
                   Filmovi

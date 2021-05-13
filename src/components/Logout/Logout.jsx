@@ -1,12 +1,12 @@
 import { useEffect } from 'react';
 import { useHistory } from 'react-router';
 
-export default function Logout({ setIsLoggedIn }) {
+export default function Logout({ setJwtToken }) {
   const history = useHistory();
   useEffect(() => {
-    setIsLoggedIn(false);
-    localStorage.removeItem('isLoggedIn');
+    setJwtToken(false);
+    localStorage.removeItem('jwtToken');
     history.push('/login');
-  }, [setIsLoggedIn, history]);
+  }, [setJwtToken, history]);
   return null;
 }
