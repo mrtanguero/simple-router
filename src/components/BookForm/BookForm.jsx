@@ -45,12 +45,20 @@ export default function BookForm() {
     if (bookId !== 'new') {
       newBook.id = +bookId;
       apiExample
-        .put(`/books`, newBook)
+        .put(`/books`, newBook, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
+          },
+        })
         .then(() => history.replace('/books'))
         .catch((err) => console.log(err));
     } else {
       apiExample
-        .post('/books', newBook)
+        .post('/books', newBook, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
+          },
+        })
         .then(() => history.replace('/books'))
         .catch((err) => console.log(err));
     }

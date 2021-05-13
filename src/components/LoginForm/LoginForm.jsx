@@ -32,7 +32,7 @@ export default function LoginForm({ setJwtToken }) {
         history.replace('/movies');
       })
       .catch((err) => {
-        console.log(err);
+        console.log(err.response?.data);
       });
   };
 
