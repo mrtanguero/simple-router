@@ -3,7 +3,7 @@ import { useParams, useHistory } from 'react-router-dom';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
-import { apiExample } from '../../api/apiExample';
+import { getPerson, createPerson, updatePerson } from '../../services/people';
 
 export default function PersonForm() {
   const { personId } = useParams();
@@ -18,12 +18,7 @@ export default function PersonForm() {
 
   useEffect(() => {
     if (personId === 'new') return;
-    apiExample
-      .get(`/people/${personId}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
-        },
-      })
+    getPerson(personId)
       .then((response) => {
         setPersonFirstName(response.data.firstName);
         setPersonLastName(response.data.lastName);
@@ -47,21 +42,11 @@ export default function PersonForm() {
     };
     if (personId !== 'new') {
       newPerson.id = +personId;
-      apiExample
-        .put(`/people`, newPerson, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
-          },
-        })
+      updatePerson(newPerson)
         .then(() => history.replace('/people'))
         .catch((err) => console.log(err));
     } else {
-      apiExample
-        .post('/people', newPerson, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
-          },
-        })
+      createPerson(newPerson)
         .then(() => history.replace('/people'))
         .catch((err) => console.log(err));
     }

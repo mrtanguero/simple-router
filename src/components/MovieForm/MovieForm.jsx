@@ -3,7 +3,7 @@ import { useParams, useHistory } from 'react-router-dom';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
-import { apiExample } from '../../api/apiExample';
+import { createMovie, getMovie, updateMovie } from '../../services/movies.js';
 
 export default function MovieForm() {
   const { movieId } = useParams();
@@ -17,12 +17,7 @@ export default function MovieForm() {
 
   useEffect(() => {
     if (movieId === 'new') return;
-    apiExample
-      .get(`/movies/${movieId}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
-        },
-      })
+    getMovie(movieId)
       .then((response) => {
         setMovieName(response.data.name);
         setMovieDirector(response.data.directorName);
@@ -44,21 +39,11 @@ export default function MovieForm() {
     };
     if (movieId !== 'new') {
       newMovie.id = +movieId;
-      apiExample
-        .put(`/movies`, newMovie, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
-          },
-        })
+      updateMovie(newMovie)
         .then(() => history.replace('/movies'))
         .catch((err) => console.log(err));
     } else {
-      apiExample
-        .post('/movies', newMovie, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
-          },
-        })
+      createMovie(newMovie)
         .then(() => history.replace('/movies'))
         .catch((err) => console.log(err));
     }

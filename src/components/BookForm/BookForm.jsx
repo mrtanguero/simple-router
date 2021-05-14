@@ -3,7 +3,7 @@ import { useParams, useHistory } from 'react-router-dom';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
-import { apiExample } from '../../api/apiExample';
+import { getBook, createBook, updateBook } from '../../services/books';
 
 export default function BookForm() {
   const { bookId } = useParams();
@@ -17,12 +17,7 @@ export default function BookForm() {
 
   useEffect(() => {
     if (bookId === 'new') return;
-    apiExample
-      .get(`/books/${bookId}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
-        },
-      })
+    getBook(bookId)
       .then((response) => {
         setBookName(response.data.isbn);
         setBookWriter(response.data.writerName);
@@ -44,21 +39,11 @@ export default function BookForm() {
     };
     if (bookId !== 'new') {
       newBook.id = +bookId;
-      apiExample
-        .put(`/books`, newBook, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
-          },
-        })
+      updateBook(newBook)
         .then(() => history.replace('/books'))
         .catch((err) => console.log(err));
     } else {
-      apiExample
-        .post('/books', newBook, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
-          },
-        })
+      createBook(newBook)
         .then(() => history.replace('/books'))
         .catch((err) => console.log(err));
     }

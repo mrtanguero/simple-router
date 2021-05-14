@@ -2,13 +2,13 @@ import React, { useState, useEffect } from 'react';
 import _ from 'lodash';
 import { Link, useHistory } from 'react-router-dom';
 import { useQuery } from '../../hooks/useQuery.js';
+import { getMovies, deleteMovie } from '../../services/movies.js';
 
 import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/Button';
 import Table from 'react-bootstrap/Table';
 import Modal from 'react-bootstrap/Modal';
 
-import { apiExample } from '../../api/apiExample';
 import EditIcon from '../../components/EditIcon/EditIcon';
 import DeleteIcon from '../../components/DeleteIcon/DeleteIcon';
 import MyPagination from '../../components/MyPagination/MyPagination';
@@ -30,15 +30,7 @@ export default function MoviesPage({ movies, setMovies }) {
   };
 
   useEffect(() => {
-    apiExample
-      .get('/movies', {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
-        },
-        params: {
-          page: query.get('page'),
-        },
-      })
+    getMovies(query)
       .then((response) => {
         setMovies(response.data);
         setResourceCount(response.headers['x-total-count']);
@@ -50,18 +42,15 @@ export default function MoviesPage({ movies, setMovies }) {
     history.push('/movies/new');
   };
 
-  const deleteMovie = (id) => {
-    apiExample.delete(`/movies/${id}`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
-      },
+  const handleDeleteMovie = (id) => {
+    deleteMovie(id).then(() => {
+      const newMovies = _.cloneDeep(movies).filter((movie) => movie.id !== id);
+      setMovies(newMovies);
     });
-    const newMovies = _.cloneDeep(movies).filter((movie) => movie.id !== id);
-    setMovies(newMovies);
   };
 
   const handleConfirmDelete = (id) => {
-    deleteMovie(id);
+    handleDeleteMovie(id);
     setShowModal(false);
   };
 

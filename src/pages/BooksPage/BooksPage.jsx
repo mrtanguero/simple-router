@@ -8,10 +8,10 @@ import Button from 'react-bootstrap/Button';
 import Table from 'react-bootstrap/Table';
 import Modal from 'react-bootstrap/Modal';
 
-import { apiExample } from '../../api/apiExample';
 import EditIcon from '../../components/EditIcon/EditIcon';
 import DeleteIcon from '../../components/DeleteIcon/DeleteIcon';
 import MyPagination from '../../components/MyPagination/MyPagination';
+import { deleteBook, getBooks } from '../../services/books';
 
 export default function BooksPage({ books, setBooks }) {
   const history = useHistory();
@@ -31,15 +31,7 @@ export default function BooksPage({ books, setBooks }) {
   };
 
   useEffect(() => {
-    apiExample
-      .get('/books', {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
-        },
-        params: {
-          page: query.get('page'),
-        },
-      })
+    getBooks(query)
       .then((response) => {
         setBooks(response.data);
         setResourceCount(response.headers['x-total-count']);
@@ -51,18 +43,15 @@ export default function BooksPage({ books, setBooks }) {
     history.push('/books/new');
   };
 
-  const deleteBook = (id) => {
-    apiExample.delete(`/books/${id}`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
-      },
+  const handleDeleteBook = (id) => {
+    deleteBook(id).then(() => {
+      const newBooks = _.cloneDeep(books).filter((book) => book.id !== id);
+      setBooks(newBooks);
     });
-    const newBooks = _.cloneDeep(books).filter((book) => book.id !== id);
-    setBooks(newBooks);
   };
 
   const handleConfirmDelete = (id) => {
-    deleteBook(id);
+    handleDeleteBook(id);
     setShowModal(false);
   };
 

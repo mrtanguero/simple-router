@@ -8,10 +8,10 @@ import Button from 'react-bootstrap/Button';
 import Table from 'react-bootstrap/Table';
 import Modal from 'react-bootstrap/Modal';
 
-import { apiExample } from '../../api/apiExample';
 import EditIcon from '../../components/EditIcon/EditIcon';
 import DeleteIcon from '../../components/DeleteIcon/DeleteIcon';
 import MyPagination from '../../components/MyPagination/MyPagination';
+import { getPeople, deletePerson } from '../../services/people.js';
 
 export default function PeoplePage({ people, setPeople }) {
   const history = useHistory();
@@ -46,15 +46,7 @@ export default function PeoplePage({ people, setPeople }) {
   };
 
   useEffect(() => {
-    apiExample
-      .get('/people', {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
-        },
-        params: {
-          page: query.get('page'),
-        },
-      })
+    getPeople(query)
       .then((response) => {
         setPeople(response.data);
         setResourceCount(response.headers['x-total-count']);
@@ -66,18 +58,17 @@ export default function PeoplePage({ people, setPeople }) {
     history.push('/people/new');
   };
 
-  const deleteperson = (id) => {
-    apiExample.delete(`/people/${id}`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
-      },
+  const handleDeletePerson = (id) => {
+    deletePerson(id).then(() => {
+      const newPeople = _.cloneDeep(people).filter(
+        (person) => person.id !== id
+      );
+      setPeople(newPeople);
     });
-    const newPeople = _.cloneDeep(people).filter((person) => person.id !== id);
-    setPeople(newPeople);
   };
 
   const handleConfirmDelete = (id) => {
-    deleteperson(id);
+    handleDeletePerson(id);
     setShowModal(false);
   };
 

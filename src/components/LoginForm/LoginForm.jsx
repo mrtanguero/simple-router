@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-import { apiExample } from '../../api/apiExample';
+import { login } from '../../services/account.js';
 
 export default function LoginForm({ setJwtToken }) {
   const history = useHistory();
@@ -12,20 +12,7 @@ export default function LoginForm({ setJwtToken }) {
   const onSubmitHandler = (e) => {
     e.preventDefault();
 
-    apiExample
-      .post(
-        '/authenticate',
-        {
-          username: username,
-          password: password,
-          rememberMe: true,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
-          },
-        }
-      )
+    login({ username, password })
       .then((response) => {
         localStorage.setItem('jwtToken', response.data.id_token);
         setJwtToken(response.data.id_token);
