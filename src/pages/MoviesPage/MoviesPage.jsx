@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import _ from 'lodash';
 import { Link, useHistory } from 'react-router-dom';
+import { useQuery } from '../../hooks/useQuery.js';
 
 import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/Button';
@@ -10,11 +11,14 @@ import Modal from 'react-bootstrap/Modal';
 import { apiExample } from '../../api/apiExample';
 import EditIcon from '../../components/EditIcon/EditIcon';
 import DeleteIcon from '../../components/DeleteIcon/DeleteIcon';
+import MyPagination from '../../components/MyPagination/MyPagination';
 
 export default function MoviesPage({ movies, setMovies }) {
   const history = useHistory();
+  const query = useQuery();
   const [showModal, setShowModal] = useState(false);
   const [modalData, setModalData] = useState({});
+  const [resourceCount, setResourceCount] = useState(0);
 
   const handleCloseModal = () => setShowModal(false);
   const handleShowModal = (id) => {
@@ -31,12 +35,16 @@ export default function MoviesPage({ movies, setMovies }) {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
         },
+        params: {
+          page: query.get('page'),
+        },
       })
       .then((response) => {
         setMovies(response.data);
+        setResourceCount(response.headers['x-total-count']);
       })
       .catch((err) => console.log(err));
-  }, [setMovies]);
+  }, [setMovies, query]);
 
   const onAddNewMovieButonHandler = () => {
     history.push('/movies/new');
@@ -98,6 +106,7 @@ export default function MoviesPage({ movies, setMovies }) {
             ))}
           </tbody>
         </Table>
+        <MyPagination rows={resourceCount} />
         <Button
           onClick={onAddNewMovieButonHandler}
           variant="danger"
