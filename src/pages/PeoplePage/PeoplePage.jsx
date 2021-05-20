@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import _ from 'lodash';
 import { Link, useHistory } from 'react-router-dom';
-import { useQuery } from '../../hooks/useQuery.js';
+import { useQueryParams } from '../../hooks/useQueryParams.js';
 
 import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/Button';
@@ -15,7 +15,7 @@ import { getPeople, deletePerson } from '../../services/people.js';
 
 export default function PeoplePage({ people, setPeople }) {
   const history = useHistory();
-  const query = useQuery();
+  const query = useQueryParams();
   const [showModal, setShowModal] = useState(false);
   const [modalData, setModalData] = useState({});
   const [resourceCount, setResourceCount] = useState(0);

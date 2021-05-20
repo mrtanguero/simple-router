@@ -1,11 +1,11 @@
 import React from 'react';
 import Pagination from 'react-bootstrap/Pagination';
 import { useHistory } from 'react-router-dom';
-import { useQuery } from '../../hooks/useQuery';
+import { useQueryParams } from '../../hooks/useQueryParams';
 
 export default function MyPagination({ size = 20, rows = 21 }) {
   const history = useHistory();
-  const query = useQuery();
+  const query = useQueryParams();
   const numOfPages = Math.ceil(rows / size);
   if (numOfPages <= 1) return null;
 

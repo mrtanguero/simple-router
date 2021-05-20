@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import _ from 'lodash';
 import { Link, useHistory } from 'react-router-dom';
-import { useQuery } from '../../hooks/useQuery';
+import { useQueryParams } from '../../hooks/useQueryParams';
 
 import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/Button';
@@ -15,7 +15,7 @@ import { deleteBook, getBooks } from '../../services/books';
 
 export default function BooksPage({ books, setBooks }) {
   const history = useHistory();
-  const query = useQuery();
+  const query = useQueryParams();
 
   const [showModal, setShowModal] = useState(false);
   const [modalData, setModalData] = useState({});
