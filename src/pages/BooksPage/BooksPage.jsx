@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import _ from 'lodash';
 import { Link, useHistory } from 'react-router-dom';
-import { useQueryParams } from '../../hooks/useQueryParams';
+import { useQueryParamPage } from '../../hooks/useQueryParamPage';
 
 import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/Button';
@@ -15,7 +15,7 @@ import { deleteBook, getBooks } from '../../services/books';
 
 export default function BooksPage({ books, setBooks }) {
   const history = useHistory();
-  const query = useQueryParams();
+  const pageNumber = useQueryParamPage();
 
   const [showModal, setShowModal] = useState(false);
   const [modalData, setModalData] = useState({});
@@ -31,13 +31,13 @@ export default function BooksPage({ books, setBooks }) {
   };
 
   useEffect(() => {
-    getBooks(query)
+    getBooks(pageNumber)
       .then((response) => {
         setBooks(response.data);
         setResourceCount(response.headers['x-total-count']);
       })
       .catch((err) => console.log(err));
-  }, [setBooks, query]);
+  }, [setBooks, pageNumber]);
 
   const onAddNewBookButonHandler = () => {
     history.push('/books/new');

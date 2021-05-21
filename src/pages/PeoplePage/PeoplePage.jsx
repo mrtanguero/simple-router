@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import _ from 'lodash';
 import { Link, useHistory } from 'react-router-dom';
-import { useQueryParams } from '../../hooks/useQueryParams.js';
+import { useQueryParamPage } from '../../hooks/useQueryParamPage.js';
 
 import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/Button';
@@ -15,7 +15,7 @@ import { getPeople, deletePerson } from '../../services/people.js';
 
 export default function PeoplePage({ people, setPeople }) {
   const history = useHistory();
-  const query = useQueryParams();
+  const pageNumber = useQueryParamPage();
   const [showModal, setShowModal] = useState(false);
   const [modalData, setModalData] = useState({});
   const [resourceCount, setResourceCount] = useState(0);
@@ -46,13 +46,13 @@ export default function PeoplePage({ people, setPeople }) {
   };
 
   useEffect(() => {
-    getPeople(query)
+    getPeople(pageNumber)
       .then((response) => {
         setPeople(response.data);
         setResourceCount(response.headers['x-total-count']);
       })
       .catch((err) => console.log(err));
-  }, [setPeople, query]);
+  }, [setPeople, pageNumber]);
 
   const onAddNewpersonButonHandler = () => {
     history.push('/people/new');

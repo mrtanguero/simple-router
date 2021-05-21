@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from 'react-query';
+import { ReactQueryDevtools } from 'react-query/devtools';
 import Container from 'react-bootstrap/Container';
 import './App.css';
 
@@ -27,6 +29,8 @@ const getJwtTokenFromLocaleStorage = () => {
     : '';
 };
 
+const queryClient = new QueryClient();
+
 function App() {
   const [jwtToken, setJwtToken] = useState(getJwtTokenFromLocaleStorage);
 
@@ -35,7 +39,7 @@ function App() {
   const [people, setPeople] = useState([]);
 
   return (
-    <>
+    <QueryClientProvider client={queryClient}>
       <MainNavigation jwtToken={jwtToken} />
       <Container className="mt-4 flex-grow-1">
         <Switch>
@@ -75,7 +79,8 @@ function App() {
         </Switch>
       </Container>
       <Footer />
-    </>
+      <ReactQueryDevtools initialIsOpen={false} />
+    </QueryClientProvider>
   );
 }
 

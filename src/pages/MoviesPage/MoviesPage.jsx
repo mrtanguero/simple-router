@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import _ from 'lodash';
+import React, { useState } from 'react';
+import { useQueryClient, useQuery, useMutation } from 'react-query';
 import { Link, useHistory } from 'react-router-dom';
-import { useQueryParams } from '../../hooks/useQueryParams.js';
+import { useQueryParamPage } from '../../hooks/useQueryParamPage.js';
 import { getMovies, deleteMovie } from '../../services/movies.js';
 
 import Container from 'react-bootstrap/Container';
@@ -15,43 +15,39 @@ import MyPagination from '../../components/MyPagination/MyPagination';
 
 export default function MoviesPage({ movies, setMovies }) {
   const history = useHistory();
-  const query = useQueryParams();
+  const pageNumber = useQueryParamPage();
   const [showModal, setShowModal] = useState(false);
   const [modalData, setModalData] = useState({});
-  const [resourceCount, setResourceCount] = useState(0);
+
+  const queryClient = useQueryClient();
+  const mutation = useMutation((id) => deleteMovie(id), {
+    onSuccess: () => queryClient.invalidateQueries('movies'),
+  });
+
+  const {
+    data: response,
+    isLoading,
+    error,
+  } = useQuery(['movies', pageNumber], () => getMovies(pageNumber));
+
+  if (error) console.log(error);
 
   const handleCloseModal = () => setShowModal(false);
   const handleShowModal = (id) => {
     setModalData({
       id: id,
-      movieName: movies.find((movie) => movie.id === id).name,
+      movieName: response.data.find((movie) => movie.id === id).name,
     });
     setShowModal(true);
   };
-
-  useEffect(() => {
-    getMovies(query)
-      .then((response) => {
-        setMovies(response.data);
-        setResourceCount(response.headers['x-total-count']);
-      })
-      .catch((err) => console.log(err));
-  }, [setMovies, query]);
 
   const onAddNewMovieButonHandler = () => {
     history.push('/movies/new');
   };
 
-  const handleDeleteMovie = (id) => {
-    deleteMovie(id).then(() => {
-      const newMovies = _.cloneDeep(movies).filter((movie) => movie.id !== id);
-      setMovies(newMovies);
-    });
-  };
-
   const handleConfirmDelete = (id) => {
-    handleDeleteMovie(id);
-    setShowModal(false);
+    mutation.mutate(id);
+    handleCloseModal();
   };
 
   const headers = ['Naziv', 'Režija', 'Trajanje', 'Scenario', 'Ocjena', ''];
@@ -68,7 +64,7 @@ export default function MoviesPage({ movies, setMovies }) {
             </tr>
           </thead>
           <tbody>
-            {movies.map((movie) => (
+            {response?.data.map((movie) => (
               <tr className="align-middle" key={movie.id}>
                 <td>{movie.name}</td>
                 <td>{movie.directorName}</td>
@@ -95,7 +91,7 @@ export default function MoviesPage({ movies, setMovies }) {
             ))}
           </tbody>
         </Table>
-        <MyPagination rows={resourceCount} />
+        <MyPagination rows={response?.headers['x-total-count']} />
         <Button
           onClick={onAddNewMovieButonHandler}
           variant="danger"

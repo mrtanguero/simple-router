@@ -1,11 +1,11 @@
 import React from 'react';
 import Pagination from 'react-bootstrap/Pagination';
 import { useHistory } from 'react-router-dom';
-import { useQueryParams } from '../../hooks/useQueryParams';
+import { useQueryParamPage } from '../../hooks/useQueryParamPage';
 
-export default function MyPagination({ size = 20, rows = 21 }) {
+export default function MyPagination({ size = 20, rows }) {
   const history = useHistory();
-  const query = useQueryParams();
+  const pageNumber = useQueryParamPage();
   const numOfPages = Math.ceil(rows / size);
   if (numOfPages <= 1) return null;
 
@@ -15,8 +15,10 @@ export default function MyPagination({ size = 20, rows = 21 }) {
       <Pagination.Item
         activeLabel={null}
         key={i + 1}
-        onClick={() => history.push(`${history.location.pathname}?page=${i}`)}
-        active={i === +query.get('page')}
+        onClick={() => {
+          history.push(`${history.location.pathname}?page=${i}`);
+        }}
+        active={i === +pageNumber}
       >
         {i + 1}
       </Pagination.Item>

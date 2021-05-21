@@ -1,12 +1,12 @@
 import { apiExample } from '../services/apiExample';
 
-export const getMovies = (query) => {
+export const getMovies = (page) => {
   return apiExample.get('/movies', {
     headers: {
       Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
     },
     params: {
-      page: query.get('page'),
+      page: page,
     },
   });
 };
