@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
+import { useQuery, useMutation } from 'react-query';
+
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
@@ -15,18 +17,30 @@ export default function MovieForm() {
   const [movieWriter, setMovieWriter] = useState('');
   const [movieRating, setMovieRating] = useState('');
 
+  const {
+    data: response,
+    // TODO: neke poruke?
+    // isLoading,
+    // error,
+  } = useQuery(['movie', movieId], () => {
+    return movieId !== 'new' && getMovie(movieId);
+  });
+
+  const mutationCreate = useMutation((newMovie) => createMovie(newMovie), {
+    onSuccess: () => history.replace('/movies'),
+  });
+  const mutationUpdate = useMutation((newMovie) => updateMovie(newMovie), {
+    onSuccess: () => history.replace('/movies'),
+  });
+
   useEffect(() => {
-    if (movieId === 'new') return;
-    getMovie(movieId)
-      .then((response) => {
-        setMovieName(response.data.name);
-        setMovieDirector(response.data.directorName);
-        setMovieDuration(response.data.duration);
-        setMovieWriter(response.data.writerName);
-        setMovieRating(response.data.rating);
-      })
-      .catch((err) => console.log(err));
-  }, [movieId]);
+    if (movieId === 'new' || !response) return;
+    setMovieName(response.data.name);
+    setMovieDirector(response.data.directorName);
+    setMovieDuration(response.data.duration);
+    setMovieWriter(response.data.writerName);
+    setMovieRating(response.data.rating);
+  }, [movieId, response]);
 
   const onSubmitHandler = (e) => {
     e.preventDefault();
@@ -39,13 +53,9 @@ export default function MovieForm() {
     };
     if (movieId !== 'new') {
       newMovie.id = +movieId;
-      updateMovie(newMovie)
-        .then(() => history.replace('/movies'))
-        .catch((err) => console.log(err));
+      mutationUpdate.mutate(newMovie);
     } else {
-      createMovie(newMovie)
-        .then(() => history.replace('/movies'))
-        .catch((err) => console.log(err));
+      mutationCreate.mutate(newMovie);
     }
   };
 

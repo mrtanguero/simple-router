@@ -7,3 +7,11 @@ export const login = (data) => {
     rememberMe: true,
   });
 };
+
+export const getAccount = () => {
+  return apiExample.get('/account', {
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
+    },
+  });
+};

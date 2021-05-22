@@ -13,7 +13,7 @@ import EditIcon from '../../components/EditIcon/EditIcon';
 import DeleteIcon from '../../components/DeleteIcon/DeleteIcon';
 import MyPagination from '../../components/MyPagination/MyPagination';
 
-export default function MoviesPage({ movies, setMovies }) {
+export default function MoviesPage() {
   const history = useHistory();
   const pageNumber = useQueryParamPage();
   const [showModal, setShowModal] = useState(false);
@@ -26,9 +26,12 @@ export default function MoviesPage({ movies, setMovies }) {
 
   const {
     data: response,
-    isLoading,
+    // TODO: Nešto uraditi sa isLoading i error
+    // isLoading,
     error,
-  } = useQuery(['movies', pageNumber], () => getMovies(pageNumber));
+  } = useQuery(['movies', pageNumber], () => getMovies(pageNumber), {
+    keepPreviousData: true,
+  });
 
   if (error) console.log(error);
 

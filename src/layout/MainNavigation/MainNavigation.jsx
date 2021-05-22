@@ -1,11 +1,18 @@
 import React from 'react';
+import { useQuery } from 'react-query';
+
 import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
 import Container from 'react-bootstrap/Container';
 import { Link, NavLink } from 'react-router-dom';
 import './MainNavigation.css';
+import { getAccount } from '../../services/account';
 
 export default function MainNavigation({ jwtToken }) {
+  const { data: response } = useQuery(
+    'account',
+    () => jwtToken && getAccount()
+  );
   return (
     <Navbar bg="dark" variant="dark" expand="md">
       <Container>
@@ -26,12 +33,18 @@ export default function MainNavigation({ jwtToken }) {
                 <Nav.Link as={NavLink} to="/people">
                   Osobe
                 </Nav.Link>
+                <Nav.Item className="account">
+                  Ulogovani ste kao{' '}
+                  <strong style={{ color: '#fff' }}>
+                    {response?.data?.login}
+                  </strong>
+                </Nav.Item>
                 <Nav.Link as={NavLink} to="/logout">
                   Logout
                 </Nav.Link>
               </>
             ) : (
-              <Nav.Link as={NavLink} to="/login">
+              <Nav.Link className="login" as={NavLink} to="/login">
                 Login
               </Nav.Link>
             )}

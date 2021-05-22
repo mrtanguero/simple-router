@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
+import { useMutation } from 'react-query';
+
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { login } from '../../services/account.js';
@@ -9,18 +11,17 @@ export default function LoginForm({ setJwtToken }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
+  const mutation = useMutation((data) => login(data), {
+    onSuccess: (response) => {
+      localStorage.setItem('jwtToken', response.data.id_token);
+      setJwtToken(response.data.id_token);
+      history.replace('/movies');
+    },
+  });
+
   const onSubmitHandler = (e) => {
     e.preventDefault();
-
-    login({ username, password })
-      .then((response) => {
-        localStorage.setItem('jwtToken', response.data.id_token);
-        setJwtToken(response.data.id_token);
-        history.replace('/movies');
-      })
-      .catch((err) => {
-        console.log(err.response?.data);
-      });
+    mutation.mutate({ username, password });
   };
 
   return (

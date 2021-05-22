@@ -1,5 +1,14 @@
+.navbar-nav .account {
+  color: rgb(143, 141, 141);
+}
+
 @media screen and (min-width: 768px) {
-  .navbar-nav a:last-of-type {
+  .navbar-nav .account {
+    margin-left: auto;
+    align-self: center;
+  }
+
+  .navbar-nav .login {
     margin-left: auto;
   }
 }

@@ -34,7 +34,7 @@ const queryClient = new QueryClient();
 function App() {
   const [jwtToken, setJwtToken] = useState(getJwtTokenFromLocaleStorage);
 
-  const [movies, setMovies] = useState([]);
+  // const [movies, setMovies] = useState([]);
   const [books, setBooks] = useState([]);
   const [people, setPeople] = useState([]);
 
@@ -47,7 +47,7 @@ function App() {
             <Redirect to="/movies" />
           </Route>
           <ProtectedRoute jwtToken={jwtToken} path="/movies" exact>
-            <MoviesPage movies={movies} setMovies={setMovies} />
+            <MoviesPage />
           </ProtectedRoute>
           <ProtectedRoute jwtToken={jwtToken} path="/movies/:movieId">
             <MovieForm />
