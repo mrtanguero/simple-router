@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { useMutation } from 'react-query';
 
 import Button from 'react-bootstrap/Button';
@@ -35,7 +35,6 @@ export default function LoginForm({ setJwtToken }) {
           onChange={(e) => setUsername(e.target.value)}
         />
       </Form.Group>
-
       <Form.Group className="mb-4" controlId="formBasicPassword">
         <Form.Label>Šifra</Form.Label>
         <Form.Control
@@ -48,6 +47,10 @@ export default function LoginForm({ setJwtToken }) {
       <Button variant="outline-primary" type="submit">
         Ulogujte se
       </Button>
+      <small className="m-auto mt-2">
+        Ako još uvijek nemate nalog, možete se registrovati{' '}
+        <Link to="/register">ovdje</Link>
+      </small>
     </Form>
   );
 }

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import { useQuery, useMutation } from 'react-query';
 
@@ -6,25 +6,29 @@ import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
 import { createMovie, getMovie, updateMovie } from '../../services/movies.js';
+import { useForm } from 'react-hook-form';
 
 export default function MovieForm() {
   const { movieId } = useParams();
   const history = useHistory();
 
-  const [movieName, setMovieName] = useState('');
-  const [movieDirector, setMovieDirector] = useState('');
-  const [movieDuration, setMovieDuration] = useState('');
-  const [movieWriter, setMovieWriter] = useState('');
-  const [movieRating, setMovieRating] = useState('');
-
-  const {
-    data: response,
-    // TODO: neke poruke?
-    // isLoading,
-    // error,
-  } = useQuery(['movie', movieId], () => {
+  const { data: response } = useQuery(['movie', movieId], () => {
     return movieId !== 'new' && getMovie(movieId);
   });
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm({
+    defaultValues: response?.data,
+  });
+
+  useEffect(() => {
+    if (!response) return;
+    reset(response.data);
+  }, [response, reset]);
 
   const mutationCreate = useMutation((newMovie) => createMovie(newMovie), {
     onSuccess: () => history.replace('/movies'),
@@ -33,34 +37,16 @@ export default function MovieForm() {
     onSuccess: () => history.replace('/movies'),
   });
 
-  useEffect(() => {
-    if (movieId === 'new' || !response) return;
-    setMovieName(response.data.name);
-    setMovieDirector(response.data.directorName);
-    setMovieDuration(response.data.duration);
-    setMovieWriter(response.data.writerName);
-    setMovieRating(response.data.rating);
-  }, [movieId, response]);
-
-  const onSubmitHandler = (e) => {
-    e.preventDefault();
-    const newMovie = {
-      name: movieName,
-      duration: movieDuration,
-      directorName: movieDirector,
-      writerName: movieWriter,
-      rating: movieRating,
-    };
+  const onSubmitHandler = (data) => {
     if (movieId !== 'new') {
-      newMovie.id = +movieId;
-      mutationUpdate.mutate(newMovie);
+      mutationUpdate.mutate(data);
     } else {
-      mutationCreate.mutate(newMovie);
+      mutationCreate.mutate(data);
     }
   };
 
   return (
-    <Form onSubmit={onSubmitHandler}>
+    <Form onSubmit={handleSubmit(onSubmitHandler)}>
       <h2 className="text-center mb-4">
         {movieId === 'new' ? 'Dodaj film' : 'Izmijeni film'}
       </h2>
@@ -69,52 +55,62 @@ export default function MovieForm() {
           <Form.Label>Naziv filma</Form.Label>
           <Form.Control
             type="text"
-            value={movieName}
-            placeholder="Unesite ime filma..."
-            onChange={(e) => setMovieName(e.target.value)}
+            placeholder="Unesite naziv filma..."
+            {...register('name', { required: 'Polje je obavezno' })}
           />
+          <small className="invalid-field">{errors.name?.message}</small>
         </Form.Group>
 
         <Form.Group className="mb-4" controlId="movieDuration">
           <Form.Label>Tranjanje filma (min)</Form.Label>
           <Form.Control
             type="number"
-            value={movieDuration}
             placeholder="Unesite trajanje filma..."
-            onChange={(e) => setMovieDuration(e.target.value)}
+            {...register('duration', { required: 'Polje je obavezno' })}
           />
+          <small className="invalid-field">{errors.duration?.message}</small>
         </Form.Group>
 
         <Form.Group className="mb-4" controlId="movieWriter">
           <Form.Label>Scenario</Form.Label>
           <Form.Control
             type="text"
-            value={movieWriter}
             placeholder="Unesite scenaristu/scenaristkinju..."
-            onChange={(e) => setMovieWriter(e.target.value)}
+            {...register('writerName', { required: 'Polje je obavezno' })}
           />
+          <small className="invalid-field">{errors.writerName?.message}</small>
         </Form.Group>
 
         <Form.Group className="mb-4" controlId="movieDirector">
           <Form.Label>Režija</Form.Label>
           <Form.Control
             type="text"
-            value={movieDirector}
             placeholder="Unesite ime režisera/režiserke..."
-            onChange={(e) => setMovieDirector(e.target.value)}
+            {...register('directorName', { required: 'Polje je obavezno' })}
           />
+          <small className="invalid-field">
+            {errors.directorName?.message}
+          </small>
         </Form.Group>
 
         <Form.Group className="mb-4" controlId="movieRating">
           <Form.Label>Ocjena (1-5)</Form.Label>
           <Form.Control
             type="number"
-            from="1"
-            to="5"
-            value={movieRating}
             placeholder="Unesite ocjenu..."
-            onChange={(e) => setMovieRating(e.target.value)}
+            {...register('rating', {
+              required: 'Polje je obavezno',
+              min: {
+                value: 1,
+                message: 'Ocjena mora biti između 1 i 5',
+              },
+              max: {
+                value: 5,
+                message: 'Ocjena mora biti između 1 i 5',
+              },
+            })}
           />
+          <small className="invalid-field">{errors.rating?.message}</small>
         </Form.Group>
 
         <Button variant="outline-primary" type="submit" className="mb-4 w-100">

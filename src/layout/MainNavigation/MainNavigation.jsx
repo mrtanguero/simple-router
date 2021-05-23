@@ -34,7 +34,7 @@ export default function MainNavigation({ jwtToken }) {
                   Osobe
                 </Nav.Link>
                 <Nav.Item className="account">
-                  Ulogovani ste kao{' '}
+                  {response?.data?.login && 'Ulogovani ste kao '}
                   <strong style={{ color: '#fff' }}>
                     {response?.data?.login}
                   </strong>
@@ -45,7 +45,7 @@ export default function MainNavigation({ jwtToken }) {
               </>
             ) : (
               <Nav.Link className="login" as={NavLink} to="/login">
-                Login
+                Login/Register
               </Nav.Link>
             )}
           </Nav>

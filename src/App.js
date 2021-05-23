@@ -22,6 +22,7 @@ import PersonForm from './components/PersonForm/PersonForm';
 
 import Page404 from './pages/Page404/Page404';
 import Footer from './layout/Footer/Footer/Footer';
+import RegisterForm from './components/RegisterForm/RegisterForm';
 
 const getJwtTokenFromLocaleStorage = () => {
   return localStorage.getItem('jwtToken')
@@ -69,6 +70,9 @@ function App() {
 
           <Route path="/login">
             <LoginPage setJwtToken={setJwtToken} />
+          </Route>
+          <Route path="/register">
+            <RegisterForm />
           </Route>
           <Route path="/logout">
             <Logout setJwtToken={setJwtToken} />

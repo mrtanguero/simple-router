@@ -12,13 +12,13 @@ import Modal from 'react-bootstrap/Modal';
 import EditIcon from '../../components/EditIcon/EditIcon';
 import DeleteIcon from '../../components/DeleteIcon/DeleteIcon';
 import MyPagination from '../../components/MyPagination/MyPagination';
+import Spinner from 'react-bootstrap/Spinner';
 
 export default function MoviesPage() {
   const history = useHistory();
   const pageNumber = useQueryParamPage();
   const [showModal, setShowModal] = useState(false);
   const [modalData, setModalData] = useState({});
-
   const queryClient = useQueryClient();
   const mutation = useMutation((id) => deleteMovie(id), {
     onSuccess: () => queryClient.invalidateQueries('movies'),
@@ -26,8 +26,8 @@ export default function MoviesPage() {
 
   const {
     data: response,
-    // TODO: Nešto uraditi sa isLoading i error
-    // isLoading,
+    // TODO: Nešto uraditi sa error
+    isLoading,
     error,
   } = useQuery(['movies', pageNumber], () => getMovies(pageNumber), {
     keepPreviousData: true,
@@ -56,7 +56,9 @@ export default function MoviesPage() {
   const headers = ['Naziv', 'Režija', 'Trajanje', 'Scenario', 'Ocjena', ''];
   return (
     <div>
-      <h2 className="text-center mb-4">Filmovi</h2>
+      <h2 className="text-center mb-4">
+        Filmovi {isLoading && <Spinner animation="border" variant="info" />}
+      </h2>
       <Container>
         <Table striped hover>
           <thead>
