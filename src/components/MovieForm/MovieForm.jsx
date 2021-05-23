@@ -8,7 +8,7 @@ import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
 
-export default function MovieForm() {
+export default function MovieForm({ setMessage }) {
   const { movieId } = useParams();
   const history = useHistory();
 
@@ -31,10 +31,16 @@ export default function MovieForm() {
   }, [response, reset]);
 
   const mutationCreate = useMutation((newMovie) => createMovie(newMovie), {
-    onSuccess: () => history.replace('/movies'),
+    onSuccess: () => {
+      setMessage('Film je uspješno kreiran.');
+      history.replace('/movies');
+    },
   });
   const mutationUpdate = useMutation((newMovie) => updateMovie(newMovie), {
-    onSuccess: () => history.replace('/movies'),
+    onSuccess: () => {
+      setMessage('Film je uspješno izmijenjen.');
+      history.replace('/movies');
+    },
   });
 
   const onSubmitHandler = (data) => {

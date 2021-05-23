@@ -12,7 +12,7 @@ import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
 
-export default function PersonForm() {
+export default function PersonForm({ setMessage }) {
   const { personId } = useParams();
   const history = useHistory();
 
@@ -35,11 +35,17 @@ export default function PersonForm() {
   }, [response, reset]);
 
   const mutationCreate = useMutation((newPerson) => createPerson(newPerson), {
-    onSuccess: () => history.replace('/people'),
+    onSuccess: () => {
+      setMessage('Osoba je uspješno kreirana.');
+      history.replace('/people');
+    },
     onError: (error) => console.log(error.response),
   });
   const mutationUpdate = useMutation((newPerson) => updatePerson(newPerson), {
-    onSuccess: () => history.replace('/people'),
+    onSuccess: () => {
+      setMessage('Osoba je uspješno izmijenjena.');
+      history.replace('/people');
+    },
     onError: (error) => console.log(error.response),
   });
 

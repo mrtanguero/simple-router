@@ -14,14 +14,17 @@ import DeleteIcon from '../../components/DeleteIcon/DeleteIcon';
 import MyPagination from '../../components/MyPagination/MyPagination';
 import Spinner from 'react-bootstrap/Spinner';
 
-export default function BooksPage() {
+export default function BooksPage({ setMessage }) {
   const history = useHistory();
   const pageNumber = useQueryParamPage();
   const [showModal, setShowModal] = useState(false);
   const [modalData, setModalData] = useState({});
   const queryClient = useQueryClient();
   const mutation = useMutation((id) => deleteBook(id), {
-    onSuccess: () => queryClient.invalidateQueries('books'),
+    onSuccess: () => {
+      queryClient.invalidateQueries('books');
+      setMessage('Knjiga je uspješno izbrisana.');
+    },
   });
 
   const {

@@ -14,14 +14,17 @@ import DeleteIcon from '../../components/DeleteIcon/DeleteIcon';
 import MyPagination from '../../components/MyPagination/MyPagination';
 import Spinner from 'react-bootstrap/Spinner';
 
-export default function PeoplePage() {
+export default function PeoplePage({ setMessage }) {
   const history = useHistory();
   const pageNumber = useQueryParamPage();
   const [showModal, setShowModal] = useState(false);
   const [modalData, setModalData] = useState({});
   const queryClient = useQueryClient();
   const mutation = useMutation((id) => deletePerson(id), {
-    onSuccess: () => queryClient.invalidateQueries('people'),
+    onSuccess: () => {
+      queryClient.invalidateQueries('people');
+      setMessage('Osoba je uspješno izbrisana.');
+    },
   });
 
   const {

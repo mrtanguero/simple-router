@@ -8,7 +8,7 @@ import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
 import { getBook, createBook, updateBook } from '../../services/books.js';
 
-export default function BookForm() {
+export default function BookForm({ setMessage }) {
   const { bookId } = useParams();
   const history = useHistory();
 
@@ -31,10 +31,16 @@ export default function BookForm() {
   }, [response, reset]);
 
   const mutationCreate = useMutation((newBook) => createBook(newBook), {
-    onSuccess: () => history.replace('/books'),
+    onSuccess: () => {
+      setMessage('Knjiga je uspješno kreirana.');
+      history.replace('/books');
+    },
   });
   const mutationUpdate = useMutation((newBook) => updateBook(newBook), {
-    onSuccess: () => history.replace('/books'),
+    onSuccess: () => {
+      setMessage('Knjiga je uspješno izmijenjena.');
+      history.replace('/books');
+    },
   });
 
   const onSubmitHandler = (data) => {

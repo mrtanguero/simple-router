@@ -14,14 +14,17 @@ import DeleteIcon from '../../components/DeleteIcon/DeleteIcon';
 import MyPagination from '../../components/MyPagination/MyPagination';
 import Spinner from 'react-bootstrap/Spinner';
 
-export default function MoviesPage() {
+export default function MoviesPage({ setMessage }) {
   const history = useHistory();
   const pageNumber = useQueryParamPage();
   const [showModal, setShowModal] = useState(false);
   const [modalData, setModalData] = useState({});
   const queryClient = useQueryClient();
   const mutation = useMutation((id) => deleteMovie(id), {
-    onSuccess: () => queryClient.invalidateQueries('movies'),
+    onSuccess: () => {
+      queryClient.invalidateQueries('movies');
+      setMessage('Film je uspješno izbrisan.');
+    },
   });
 
   const {

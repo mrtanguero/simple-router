@@ -8,7 +8,7 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { registerAccount } from '../../services/account.js';
 
-export default function RegisterForm() {
+export default function RegisterForm({ setMessage }) {
   const history = useHistory();
   const {
     register,
@@ -19,6 +19,9 @@ export default function RegisterForm() {
 
   const mutation = useMutation((data) => registerAccount(data), {
     onSuccess: () => {
+      setMessage(
+        'Uspješno ste registrovani. Prije nego što se logujete morate aktivirati nalog uz pomoć linka koji je poslat na adresu koju ste iskoristili pri registraciji.'
+      );
       history.replace('/login');
     },
     onError: (error) => {
