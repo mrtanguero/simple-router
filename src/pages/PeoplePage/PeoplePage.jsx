@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import _ from 'lodash';
+import React, { useState } from 'react';
+import { useQueryClient, useQuery, useMutation } from 'react-query';
 import { Link, useHistory } from 'react-router-dom';
 import { useQueryParamPage } from '../../hooks/useQueryParamPage.js';
+import { getPeople, deletePerson } from '../../services/people.js';
 
 import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/Button';
@@ -11,23 +12,36 @@ import Modal from 'react-bootstrap/Modal';
 import EditIcon from '../../components/EditIcon/EditIcon';
 import DeleteIcon from '../../components/DeleteIcon/DeleteIcon';
 import MyPagination from '../../components/MyPagination/MyPagination';
-import { getPeople, deletePerson } from '../../services/people.js';
+import Spinner from 'react-bootstrap/Spinner';
 
-export default function PeoplePage({ people, setPeople }) {
+export default function PeoplePage() {
   const history = useHistory();
   const pageNumber = useQueryParamPage();
   const [showModal, setShowModal] = useState(false);
   const [modalData, setModalData] = useState({});
-  const [resourceCount, setResourceCount] = useState(0);
+  const queryClient = useQueryClient();
+  const mutation = useMutation((id) => deletePerson(id), {
+    onSuccess: () => queryClient.invalidateQueries('people'),
+  });
+
+  const {
+    data: response,
+    isLoading,
+    error,
+  } = useQuery(['people', pageNumber], () => getPeople(pageNumber), {
+    keepPreviousData: true,
+  });
+
+  if (error) console.log(error);
 
   const handleCloseModal = () => setShowModal(false);
   const handleShowModal = (id) => {
     setModalData({
       id: id,
       personName:
-        people.find((person) => person.id === id).firstName +
+        response.data.find((person) => person.id === id).firstName +
         ' ' +
-        people.find((person) => person.id === id).lastName,
+        response.data.find((person) => person.id === id).lastName,
     });
     setShowModal(true);
   };
@@ -45,31 +59,13 @@ export default function PeoplePage({ people, setPeople }) {
     }
   };
 
-  useEffect(() => {
-    getPeople(pageNumber)
-      .then((response) => {
-        setPeople(response.data);
-        setResourceCount(response.headers['x-total-count']);
-      })
-      .catch((err) => console.log(err));
-  }, [setPeople, pageNumber]);
-
   const onAddNewpersonButonHandler = () => {
     history.push('/people/new');
   };
 
-  const handleDeletePerson = (id) => {
-    deletePerson(id).then(() => {
-      const newPeople = _.cloneDeep(people).filter(
-        (person) => person.id !== id
-      );
-      setPeople(newPeople);
-    });
-  };
-
   const handleConfirmDelete = (id) => {
-    handleDeletePerson(id);
-    setShowModal(false);
+    mutation.mutate(id);
+    handleCloseModal();
   };
 
   const headers = [
@@ -83,7 +79,9 @@ export default function PeoplePage({ people, setPeople }) {
   ];
   return (
     <div>
-      <h2 className="text-center mb-4">Knjige</h2>
+      <h2 className="text-center mb-4">
+        Osobe {isLoading && <Spinner animation="border" variant="info" />}
+      </h2>
       <Container>
         <Table striped hover>
           <thead>
@@ -94,7 +92,7 @@ export default function PeoplePage({ people, setPeople }) {
             </tr>
           </thead>
           <tbody>
-            {people.map((person) => (
+            {response?.data.map((person) => (
               <tr className="align-middle" key={person.id}>
                 <td>{person.firstName}</td>
                 <td>{person.lastName}</td>
@@ -122,7 +120,7 @@ export default function PeoplePage({ people, setPeople }) {
             ))}
           </tbody>
         </Table>
-        <MyPagination rows={resourceCount} />
+        <MyPagination rows={response?.headers['x-total-count']} />
         <Button
           onClick={onAddNewpersonButonHandler}
           variant="danger"

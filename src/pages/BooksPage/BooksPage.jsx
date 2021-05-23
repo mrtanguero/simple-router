@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import _ from 'lodash';
+import React, { useState } from 'react';
+import { useQueryClient, useQuery, useMutation } from 'react-query';
 import { Link, useHistory } from 'react-router-dom';
 import { useQueryParamPage } from '../../hooks/useQueryParamPage';
+import { deleteBook, getBooks } from '../../services/books';
 
 import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/Button';
@@ -11,54 +12,52 @@ import Modal from 'react-bootstrap/Modal';
 import EditIcon from '../../components/EditIcon/EditIcon';
 import DeleteIcon from '../../components/DeleteIcon/DeleteIcon';
 import MyPagination from '../../components/MyPagination/MyPagination';
-import { deleteBook, getBooks } from '../../services/books';
+import Spinner from 'react-bootstrap/Spinner';
 
-export default function BooksPage({ books, setBooks }) {
+export default function BooksPage() {
   const history = useHistory();
   const pageNumber = useQueryParamPage();
-
   const [showModal, setShowModal] = useState(false);
   const [modalData, setModalData] = useState({});
-  const [resourceCount, setResourceCount] = useState(0);
+  const queryClient = useQueryClient();
+  const mutation = useMutation((id) => deleteBook(id), {
+    onSuccess: () => queryClient.invalidateQueries('books'),
+  });
+
+  const {
+    data: response,
+    isLoading,
+    error,
+  } = useQuery(['books', pageNumber], () => getBooks(pageNumber), {
+    keepPreviousData: true,
+  });
+
+  if (error) console.log(error);
 
   const handleCloseModal = () => setShowModal(false);
   const handleShowModal = (id) => {
     setModalData({
       id: id,
-      bookName: books.find((book) => book.id === id).isbn,
+      bookName: response.data.find((book) => book.id === id).isbn,
     });
     setShowModal(true);
   };
-
-  useEffect(() => {
-    getBooks(pageNumber)
-      .then((response) => {
-        setBooks(response.data);
-        setResourceCount(response.headers['x-total-count']);
-      })
-      .catch((err) => console.log(err));
-  }, [setBooks, pageNumber]);
 
   const onAddNewBookButonHandler = () => {
     history.push('/books/new');
   };
 
-  const handleDeleteBook = (id) => {
-    deleteBook(id).then(() => {
-      const newBooks = _.cloneDeep(books).filter((book) => book.id !== id);
-      setBooks(newBooks);
-    });
-  };
-
   const handleConfirmDelete = (id) => {
-    handleDeleteBook(id);
-    setShowModal(false);
+    mutation.mutate(id);
+    handleCloseModal();
   };
 
   const headers = ['Naziv', 'Pisac', 'Žanr', 'Datum izdavanja', 'Izdavač', ''];
   return (
     <div>
-      <h2 className="text-center mb-4">Knjige</h2>
+      <h2 className="text-center mb-4">
+        Knjige {isLoading && <Spinner animation="border" variant="info" />}
+      </h2>
       <Container>
         <Table striped hover>
           <thead>
@@ -69,7 +68,7 @@ export default function BooksPage({ books, setBooks }) {
             </tr>
           </thead>
           <tbody>
-            {books.map((book) => (
+            {response?.data.map((book) => (
               <tr className="align-middle" key={book.id}>
                 <td>{book.isbn}</td>
                 <td>{book.writerName}</td>
@@ -96,7 +95,7 @@ export default function BooksPage({ books, setBooks }) {
             ))}
           </tbody>
         </Table>
-        <MyPagination rows={resourceCount} />
+        <MyPagination rows={response?.headers['x-total-count']} />
 
         <Button
           onClick={onAddNewBookButonHandler}

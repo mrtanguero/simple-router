@@ -26,7 +26,6 @@ export default function MoviesPage() {
 
   const {
     data: response,
-    // TODO: Nešto uraditi sa error
     isLoading,
     error,
   } = useQuery(['movies', pageNumber], () => getMovies(pageNumber), {

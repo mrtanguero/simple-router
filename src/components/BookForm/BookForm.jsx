@@ -1,56 +1,52 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
+import { useQuery, useMutation } from 'react-query';
+import { useForm } from 'react-hook-form';
+
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
-import { getBook, createBook, updateBook } from '../../services/books';
+import { getBook, createBook, updateBook } from '../../services/books.js';
 
 export default function BookForm() {
   const { bookId } = useParams();
   const history = useHistory();
 
-  const [bookName, setBookName] = useState('');
-  const [bookPublisher, setBookPublisher] = useState('');
-  const [bookPublishedDate, setBookPublishedDate] = useState('');
-  const [bookWriter, setBookWriter] = useState('');
-  const [bookGenre, setBookGenre] = useState('');
+  const { data: response } = useQuery(['book', bookId], () => {
+    return bookId !== 'new' && getBook(bookId);
+  });
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm({
+    defaultValues: response?.data,
+  });
 
   useEffect(() => {
-    if (bookId === 'new') return;
-    getBook(bookId)
-      .then((response) => {
-        setBookName(response.data.isbn);
-        setBookWriter(response.data.writerName);
-        setBookPublisher(response.data.publisherName);
-        setBookPublishedDate(response.data.publishedDate);
-        setBookGenre(response.data.genre);
-      })
-      .catch((err) => console.log(err));
-  }, [bookId]);
+    if (!response) return;
+    reset(response.data);
+  }, [response, reset]);
 
-  const onSubmitHandler = (e) => {
-    e.preventDefault();
-    const newBook = {
-      isbn: bookName,
-      publishedDate: bookPublishedDate,
-      publisherName: bookPublisher,
-      writerName: bookWriter,
-      genre: bookGenre,
-    };
+  const mutationCreate = useMutation((newBook) => createBook(newBook), {
+    onSuccess: () => history.replace('/books'),
+  });
+  const mutationUpdate = useMutation((newBook) => updateBook(newBook), {
+    onSuccess: () => history.replace('/books'),
+  });
+
+  const onSubmitHandler = (data) => {
     if (bookId !== 'new') {
-      newBook.id = +bookId;
-      updateBook(newBook)
-        .then(() => history.replace('/books'))
-        .catch((err) => console.log(err));
+      mutationUpdate.mutate(data);
     } else {
-      createBook(newBook)
-        .then(() => history.replace('/books'))
-        .catch((err) => console.log(err));
+      mutationCreate.mutate(data);
     }
   };
 
   return (
-    <Form onSubmit={onSubmitHandler}>
+    <Form onSubmit={handleSubmit(onSubmitHandler)}>
       <h2 className="text-center mb-4">
         {bookId === 'new' ? 'Dodaj knjigu' : 'Izmijeni knjigu'}
       </h2>
@@ -59,50 +55,54 @@ export default function BookForm() {
           <Form.Label>Naziv knjige</Form.Label>
           <Form.Control
             type="text"
-            value={bookName}
             placeholder="Unesite naziv knjige..."
-            onChange={(e) => setBookName(e.target.value)}
+            {...register('isbn', { required: 'Polje je obavezno' })}
           />
+          <small className="invalid-field">{errors.isbn?.message}</small>
         </Form.Group>
 
         <Form.Group className="mb-4" controlId="bookWriter">
           <Form.Label>Scenario</Form.Label>
           <Form.Control
             type="text"
-            value={bookWriter}
             placeholder="Unesite pisca..."
-            onChange={(e) => setBookWriter(e.target.value)}
+            {...register('writerName', { required: 'Polje je obavezno' })}
           />
+          <small className="invalid-field">{errors.writerName?.message}</small>
         </Form.Group>
 
         <Form.Group className="mb-4" controlId="bookPublisher">
           <Form.Label>Izdavač</Form.Label>
           <Form.Control
             type="text"
-            value={bookPublisher}
             placeholder="Unesite ime izdavača..."
-            onChange={(e) => setBookPublisher(e.target.value)}
+            {...register('publisherName', { required: 'Polje je obavezno' })}
           />
+          <small className="invalid-field">
+            {errors.publisherName?.message}
+          </small>
         </Form.Group>
 
         <Form.Group className="mb-4" controlId="bookPublishedDate">
           <Form.Label>Datum izdavanja (format GGGG-MM-DD)</Form.Label>
           <Form.Control
             type="string"
-            value={bookPublishedDate}
             placeholder="Unesite datum izdavanja..."
-            onChange={(e) => setBookPublishedDate(e.target.value)}
+            {...register('publishedDate', { required: 'Polje je obavezno' })}
           />
+          <small className="invalid-field">
+            {errors.publishedDate?.message}
+          </small>
         </Form.Group>
 
         <Form.Group className="mb-4" controlId="bookGenre">
           <Form.Label>Žanr</Form.Label>
           <Form.Control
             type="text"
-            value={bookGenre}
             placeholder="Unesite žanr"
-            onChange={(e) => setBookGenre(e.target.value)}
+            {...register('genre', { required: 'Polje je obavezno' })}
           />
+          <small className="invalid-field">{errors.genre?.message}</small>
         </Form.Group>
 
         <Button variant="outline-primary" type="submit" className="mb-4 w-100">

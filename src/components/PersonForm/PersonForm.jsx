@@ -1,59 +1,58 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
+import { useQuery, useMutation } from 'react-query';
+import { useForm } from 'react-hook-form';
+import {
+  getPerson,
+  createPerson,
+  updatePerson,
+} from '../../services/people.js';
+
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
-import { getPerson, createPerson, updatePerson } from '../../services/people';
 
 export default function PersonForm() {
   const { personId } = useParams();
   const history = useHistory();
 
-  const [personFirstName, setPersonFirstName] = useState('');
-  const [personLastName, setPersonLastName] = useState('');
-  const [personGender, setPersonGender] = useState('');
-  const [personDateOfBirth, setPersonDateOfBirth] = useState('');
-  const [personAge, setPersonAge] = useState('');
-  const [personOccupation, setPersonOccupation] = useState('');
+  const { data: response } = useQuery(['person', personId], () => {
+    return personId !== 'new' && getPerson(personId);
+  });
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm({
+    defaultValues: response?.data,
+  });
 
   useEffect(() => {
-    if (personId === 'new') return;
-    getPerson(personId)
-      .then((response) => {
-        setPersonFirstName(response.data.firstName);
-        setPersonLastName(response.data.lastName);
-        setPersonGender(response.data.gender);
-        setPersonDateOfBirth(response.data.dateOfBirth);
-        setPersonAge(response.data.age);
-        setPersonOccupation(response.data.occupation);
-      })
-      .catch((err) => console.log(err));
-  }, [personId]);
+    if (!response) return;
+    reset(response.data);
+  }, [response, reset]);
 
-  const onSubmitHandler = (e) => {
-    e.preventDefault();
-    const newPerson = {
-      firstName: personFirstName,
-      lastName: personLastName,
-      gender: personGender,
-      dateOfBirth: personDateOfBirth,
-      age: personAge,
-      occupation: personOccupation,
-    };
+  const mutationCreate = useMutation((newPerson) => createPerson(newPerson), {
+    onSuccess: () => history.replace('/people'),
+    onError: (error) => console.log(error.response),
+  });
+  const mutationUpdate = useMutation((newPerson) => updatePerson(newPerson), {
+    onSuccess: () => history.replace('/people'),
+    onError: (error) => console.log(error.response),
+  });
+
+  const onSubmitHandler = (data) => {
     if (personId !== 'new') {
-      newPerson.id = +personId;
-      updatePerson(newPerson)
-        .then(() => history.replace('/people'))
-        .catch((err) => console.log(err));
+      mutationUpdate.mutate(data);
     } else {
-      createPerson(newPerson)
-        .then(() => history.replace('/people'))
-        .catch((err) => console.log(err));
+      mutationCreate.mutate(data);
     }
   };
 
   return (
-    <Form onSubmit={onSubmitHandler}>
+    <Form onSubmit={handleSubmit(onSubmitHandler)}>
       <h2 className="text-center mb-4">
         {personId === 'new' ? 'Dodaj osobu' : 'Izmijeni osobu'}
       </h2>
@@ -62,64 +61,64 @@ export default function PersonForm() {
           <Form.Label>Ime</Form.Label>
           <Form.Control
             type="text"
-            value={personFirstName}
             placeholder="Unesite ime osobe..."
-            onChange={(e) => setPersonFirstName(e.target.value)}
+            {...register('firstName', { required: 'Polje je obavezno' })}
           />
+          <small className="invalid-field">{errors.firstName?.message}</small>
         </Form.Group>
 
         <Form.Group className="mb-4" controlId="personLastName">
           <Form.Label>Prezime</Form.Label>
           <Form.Control
             type="text"
-            value={personLastName}
             placeholder="Unesite prezime osobe..."
-            onChange={(e) => setPersonLastName(e.target.value)}
+            {...register('lastName', { required: 'Polje je obavezno' })}
           />
+          <small className="invalid-field">{errors.lastName?.message}</small>
         </Form.Group>
 
         <Form.Group className="mb-4" controlId="personGender">
           <Form.Label>Pol</Form.Label>
           <Form.Control
             as="select"
-            value={personGender}
-            onChange={(e) => setPersonGender(e.target.value)}
+            {...register('gender', { required: 'Polje je obavezno' })}
           >
             <option value="">--Odaberite pol osobe--</option>
             <option value="MALE">muški</option>
             <option value="FEMALE">ženski</option>
             <option value="OTHER">ostalo</option>
           </Form.Control>
+          <small className="invalid-field">{errors.gender?.message}</small>
         </Form.Group>
 
         <Form.Group className="mb-4" controlId="personDateOfBirth">
           <Form.Label>Datum rođenja</Form.Label>
           <Form.Control
             type="text"
-            value={personDateOfBirth}
-            placeholder="Unesite ime izdavača..."
-            onChange={(e) => setPersonDateOfBirth(e.target.value)}
+            placeholder="Unesite datum rođenja..."
+            {...register('dateOfBirth', { required: 'Polje je obavezno' })}
           />
+          <small className="invalid-field">{errors.dateOfBirth?.message}</small>
         </Form.Group>
 
         <Form.Group className="mb-4" controlId="personAge">
           <Form.Label>Godine</Form.Label>
           <Form.Control
             type="number"
-            value={personAge}
             placeholder="Unesite godište..."
-            onChange={(e) => setPersonAge(e.target.value)}
+            {...register('age', { required: 'Polje je obavezno' })}
           />
+          <small className="invalid-field">{errors.age?.message}</small>
         </Form.Group>
 
         <Form.Group className="mb-4" controlId="personOccupation">
           <Form.Label>Žanr</Form.Label>
           <Form.Control
             type="text"
-            value={personOccupation}
             placeholder="Unesite zanimanje..."
-            onChange={(e) => setPersonOccupation(e.target.value)}
+            {...register('occupation', { required: 'Polje je obavezno' })}
           />
+          <small className="invalid-field">{errors.occupation?.message}</small>
         </Form.Group>
 
         <Button variant="outline-primary" type="submit" className="mb-4 w-100">
