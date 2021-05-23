@@ -82,7 +82,7 @@ export default function PeoplePage() {
       <h2 className="text-center mb-4">
         Osobe {isLoading && <Spinner animation="border" variant="info" />}
       </h2>
-      <Container>
+      <Container className={response?.headers['x-total-count'] <= 20 && 'mb-5'}>
         <Table striped hover>
           <thead>
             <tr>

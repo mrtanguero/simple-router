@@ -107,10 +107,10 @@ export default function RegisterForm() {
         <Form.Label>Šifra</Form.Label>
         <Form.Control
           type="password"
+          placeholder="Unesite svoju šifru"
           {...register('password', {
             required: 'Polje je obavezno',
           })}
-          placeholder="Unesite svoju šifru"
         />
         <small className="invalid-field">{errors.password?.message}</small>
       </Form.Group>
