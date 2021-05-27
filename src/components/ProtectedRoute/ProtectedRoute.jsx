@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Redirect, Route } from 'react-router-dom';
 
 export default function ProtectedRoute({ path, jwtToken, children }) {
@@ -12,3 +13,9 @@ export default function ProtectedRoute({ path, jwtToken, children }) {
     </>
   );
 }
+
+ProtectedRoute.propTypes = {
+  path: PropTypes.string.isRequired,
+  jwtToken: PropTypes.string,
+  children: PropTypes.node,
+};

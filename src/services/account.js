@@ -16,6 +16,7 @@ export const registerAccount = (data) => {
     email: data.email,
     password: data.password,
     authorities: ['ROLE_USER'],
+    langKey: 'en',
   });
 };
 

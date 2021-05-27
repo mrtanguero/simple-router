@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { useHistory } from 'react-router';
 
 export default function Logout({ setJwtToken }) {
@@ -10,3 +11,7 @@ export default function Logout({ setJwtToken }) {
   }, [setJwtToken, history]);
   return null;
 }
+
+Logout.propTypes = {
+  setJwtToken: PropTypes.func.isRequired,
+};

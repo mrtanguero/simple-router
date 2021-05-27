@@ -1,9 +1,10 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import Pagination from 'react-bootstrap/Pagination';
 import { useHistory } from 'react-router-dom';
 import { useQueryParamPage } from '../../hooks/useQueryParamPage';
 
-export default function MyPagination({ size = 20, rows }) {
+export default function MyPagination({ size = 20, rows = 20 }) {
   const history = useHistory();
   const pageNumber = useQueryParamPage();
   const numOfPages = Math.ceil(rows / size);
@@ -26,3 +27,8 @@ export default function MyPagination({ size = 20, rows }) {
   }
   return <Pagination>{paginationItems}</Pagination>;
 }
+
+MyPagination.propTypes = {
+  size: PropTypes.string,
+  rows: PropTypes.string,
+};

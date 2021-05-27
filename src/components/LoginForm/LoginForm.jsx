@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Link, useHistory } from 'react-router-dom';
 import { useMutation } from 'react-query';
 import { useForm } from 'react-hook-form';
@@ -85,3 +86,7 @@ export default function LoginForm({ setJwtToken }) {
     </Form>
   );
 }
+
+LoginForm.propTypes = {
+  setJwtToken: PropTypes.func.isRequired,
+};

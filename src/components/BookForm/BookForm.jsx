@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { useParams, useHistory } from 'react-router-dom';
 import { useQuery, useMutation } from 'react-query';
 import { useForm } from 'react-hook-form';
@@ -118,3 +119,7 @@ export default function BookForm({ setMessage }) {
     </Form>
   );
 }
+
+BookForm.propTypes = {
+  setMessage: PropTypes.func.isRequired,
+};

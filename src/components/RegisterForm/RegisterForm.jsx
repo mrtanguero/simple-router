@@ -1,5 +1,6 @@
 import React from 'react';
 import './RegisterForm.css';
+import PropTypes from 'prop-types';
 import { Link, useHistory } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { useMutation } from 'react-query';
@@ -127,3 +128,7 @@ export default function RegisterForm({ setMessage }) {
     </Form>
   );
 }
+
+RegisterForm.propTypes = {
+  setMessage: PropTypes.func.isRequired,
+};
