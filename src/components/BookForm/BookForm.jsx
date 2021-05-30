@@ -54,7 +54,7 @@ export default function BookForm({ setMessage }) {
 
   return (
     <Form onSubmit={handleSubmit(onSubmitHandler)}>
-      <h2 className="text-center mb-4">
+      <h2 className="text-center mb-4 w-100">
         {bookId === 'new' ? 'Dodaj knjigu' : 'Izmijeni knjigu'}
       </h2>
       <Container>
