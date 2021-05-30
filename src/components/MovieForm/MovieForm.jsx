@@ -54,7 +54,7 @@ export default function MovieForm({ setMessage }) {
 
   return (
     <Form onSubmit={handleSubmit(onSubmitHandler)}>
-      <h2 className="text-center mb-4">
+      <h2 className="text-center mb-4 w-100">
         {movieId === 'new' ? 'Dodaj film' : 'Izmijeni film'}
       </h2>
       <Container>

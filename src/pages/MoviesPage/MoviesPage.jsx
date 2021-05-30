@@ -27,13 +27,13 @@ export default function MoviesPage({ setMessage }) {
     },
   });
 
-  const {
-    data: response,
-    isLoading,
-    error,
-  } = useQuery(['movies', pageNumber], () => getMovies(pageNumber), {
-    keepPreviousData: true,
-  });
+  const { data: response, isLoading, error } = useQuery(
+    ['movies', pageNumber],
+    () => getMovies(pageNumber),
+    {
+      keepPreviousData: true,
+    }
+  );
 
   if (error) console.log(error);
 

@@ -16,6 +16,6 @@ export default function ProtectedRoute({ path, jwtToken, children }) {
 
 ProtectedRoute.propTypes = {
   path: PropTypes.string.isRequired,
-  jwtToken: PropTypes.string,
+  jwtToken: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
   children: PropTypes.node,
 };

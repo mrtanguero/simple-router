@@ -1,9 +1,8 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense } from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { ToastContainer, toast } from 'react-toastify';
 import Container from 'react-bootstrap/Container';
-import './App.css';
 import 'react-toastify/dist/ReactToastify.min.css';
 
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
@@ -12,18 +11,21 @@ import MainNavigation from './layout/MainNavigation/MainNavigation';
 import LoginPage from './pages/LoginPage/LoginPage';
 import Logout from './components/Logout/Logout';
 
-import MoviesPage from './pages/MoviesPage/MoviesPage';
-import MovieForm from './components/MovieForm/MovieForm';
-
-import BooksPage from './pages/BooksPage/BooksPage';
-import BookForm from './components/BookForm/BookForm';
-
-import PeoplePage from './pages/PeoplePage/PeoplePage';
-import PersonForm from './components/PersonForm/PersonForm';
-
 import Page404 from './pages/Page404/Page404';
 import Footer from './layout/Footer/Footer/Footer';
 import RegisterForm from './components/RegisterForm/RegisterForm';
+import CenteredSpinner from './components/CenteredSpinner/CenteredSpinner';
+
+const MoviesPage = React.lazy(() => import('./pages/MoviesPage/MoviesPage'));
+const MovieForm = React.lazy(() => import('./components/MovieForm/MovieForm'));
+
+const BooksPage = React.lazy(() => import('./pages/BooksPage/BooksPage'));
+const BookForm = React.lazy(() => import('./components/BookForm/BookForm'));
+
+const PeoplePage = React.lazy(() => import('./pages/PeoplePage/PeoplePage'));
+const PersonForm = React.lazy(() =>
+  import('./components/PersonForm/PersonForm')
+);
 
 const getJwtTokenFromLocaleStorage = () => {
   return localStorage.getItem('jwtToken')
@@ -72,24 +74,36 @@ function App() {
           </Route>
 
           <ProtectedRoute jwtToken={jwtToken} path="/movies" exact>
-            <MoviesPage setMessage={setMessage} />
+            <Suspense fallback={<CenteredSpinner />}>
+              <MoviesPage setMessage={setMessage} />
+            </Suspense>
           </ProtectedRoute>
           <ProtectedRoute jwtToken={jwtToken} path="/movies/:movieId">
-            <MovieForm setMessage={setMessage} />
+            <Suspense fallback={<CenteredSpinner />}>
+              <MovieForm setMessage={setMessage} />
+            </Suspense>
           </ProtectedRoute>
 
           <ProtectedRoute jwtToken={jwtToken} path="/books" exact>
-            <BooksPage setMessage={setMessage} />
+            <Suspense fallback={<CenteredSpinner />}>
+              <BooksPage setMessage={setMessage} />
+            </Suspense>
           </ProtectedRoute>
           <ProtectedRoute jwtToken={jwtToken} path="/books/:bookId">
-            <BookForm setMessage={setMessage} />
+            <Suspense fallback={<CenteredSpinner />}>
+              <BookForm setMessage={setMessage} />
+            </Suspense>
           </ProtectedRoute>
 
           <ProtectedRoute jwtToken={jwtToken} path="/people" exact>
-            <PeoplePage setMessage={setMessage} />
+            <Suspense fallback={<CenteredSpinner />}>
+              <PeoplePage setMessage={setMessage} />
+            </Suspense>
           </ProtectedRoute>
           <ProtectedRoute jwtToken={jwtToken} path="/people/:personId">
-            <PersonForm setMessage={setMessage} />
+            <Suspense fallback={<CenteredSpinner />}>
+              <PersonForm setMessage={setMessage} />
+            </Suspense>
           </ProtectedRoute>
 
           <Route path="/login">
