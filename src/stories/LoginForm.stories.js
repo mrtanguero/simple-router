@@ -1,5 +1,5 @@
 import React from 'react';
-import LoginForm from '../components/LoginForm/LoginForm';
+import LoginForm from './LoginForm';
 import { QueryClientProvider, QueryClient } from 'react-query';
 import { BrowserRouter } from 'react-router-dom';
 import '../index.css';
@@ -22,5 +22,5 @@ const Template = (args) => (
 
 export const Default = Template.bind({});
 Default.args = {
-  setJwtToken: () => console.log('Funkcija.'),
+  setJwtToken: () => {},
 };
